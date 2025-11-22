@@ -92,3 +92,39 @@ Error: querySrv ENOTFOUND _mongodb._tcp.cluster0.xxxxx.mongodb.net
 🕒 زمان: ۱۴۰۴/۹/۱, ۱۶:۱۶:۴۸
 📡 آدرس: http://localhost:3003 و http://192.168.1.102:3003
         
+2025-11-22 20:20:28 [INFO]: ✅ Connected to MongoDB successfully
+2025-11-22 20:20:28 [INFO]: 
+🚀 سرور در حال اجراست
+📍 پورت: 3003
+🌍 محیط: development
+📊 دیتابیس: متصل
+🕒 زمان: ۱۴۰۴/۹/۱, ۲۰:۲۰:۲۸
+📡 آدرس: http://localhost:3003 و http://192.168.1.102:3003
+        
+2025-11-22 20:20:47 [INFO]: ✅ Connected to MongoDB successfully
+2025-11-22 20:20:47 [INFO]: 
+🚀 سرور در حال اجراست
+📍 پورت: 3003
+🌍 محیط: development
+📊 دیتابیس: متصل
+🕒 زمان: ۱۴۰۴/۹/۱, ۲۰:۲۰:۴۷
+📡 آدرس: http://localhost:3003 و http://192.168.1.102:3003
+        
+2025-11-22 20:21:57 [INFO]: ✅ Connected to MongoDB successfully
+2025-11-22 20:21:57 [INFO]: 
+🚀 سرور در حال اجراست
+📍 پورت: 3003
+🌍 محیط: development
+📊 دیتابیس: متصل
+🕒 زمان: ۱۴۰۴/۹/۱, ۲۰:۲۱:۵۷
+📡 آدرس: http://localhost:3003 و http://192.168.1.102:3003
+        
+2025-11-22 20:23:38 [INFO]: ✅ Connected to MongoDB successfully
+2025-11-22 20:23:38 [INFO]: 
+🚀 سرور در حال اجراست
+📍 پورت: 3003
+🌍 محیط: development
+📊 دیتابیس: متصل
+🕒 زمان: ۱۴۰۴/۹/۱, ۲۰:۲۳:۳۸
+📡 آدرس: http://localhost:3003 و http://192.168.1.102:3003
+        

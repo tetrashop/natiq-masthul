@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحه NLP - ۱۶۲ پست</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .nlp-container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .nlp-header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #4CAF50; padding-bottom: 20px; }
+        .nlp-header h1 { color: #333; margin: 0; font-size: 2.5em; }
+        .nlp-header p { color: #666; font-size: 1.2em; margin: 10px 0; }
+        .generate-btn { background: #4CAF50; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; margin: 20px 0; }
+        .generate-btn:hover { background: #45a049; }
+        .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; margin-top: 30px; }
+        .post-card { border: 1px solid #e0e0e0; padding: 25px; border-radius: 8px; background: #fafafa; transition: transform 0.2s; }
+        .post-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .post-title { font-size: 1.3em; font-weight: bold; margin-bottom: 15px; color: #333; }
+        .post-content { color: #666; line-height: 1.6; margin-bottom: 15px; }
+        .post-meta { font-size: 0.9em; color: #888; border-top: 1px solid #eee; padding-top: 10px; }
+        .post-count { font-weight: bold; color: #4CAF50; font-size: 1.4em; }
+        .loading { text-align: center; color: #666; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+    <div class="nlp-container">
+        <div class="nlp-header">
+            <h1>📚 صفحه پردازش زبان طبیعی (NLP)</h1>
+            <p>تعداد پست‌ها: <span class="post-count" id="postCount">0</span> از ۱۶۲ پست</p>
+            <button class="generate-btn" onclick="generatePosts()">🚀 تولید ۱۶۲ پست نمونه</button>
+        </div>
+        
+        <div id="loadingMessage" class="loading" style="display: none;">
+            در حال تولید پست‌ها... لطفاً منتظر بمانید
+        </div>
+        
+        <div id="postsContainer" class="posts-grid"></div>
+    </div>
+
+    <script>
+        async function loadPosts() {
+            try {
+                const response = await fetch('/api/nlp/posts');
+                const posts = await response.json();
+                displayPosts(posts);
+            } catch (error) {
+                console.error('خطا در بارگذاری پست‌ها:', error);
+                document.getElementById('postsContainer').innerHTML = '<p style="text-align: center; color: red;">خطا در بارگذاری پست‌ها</p>';
+            }
+        }
+
+        async function generatePosts() {
+            const button = document.querySelector('.generate-btn');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            button.disabled = true;
+            button.textContent = 'در حال تولید...';
+            loadingMessage.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/nlp/generate-samples', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await response.json();
+                alert('✅ ' + result.message);
+                loadPosts();
+            } catch (error) {
+                console.error('خطا در تولید پست‌ها:', error);
+                alert('❌ خطا در تولید پست‌ها');
+            } finally {
+                button.disabled = false;
+                button.textContent = '🚀 تولید ۱۶۲ پست نمونه';
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+        function displayPosts(posts) {
+            const container = document.getElementById('postsContainer');
+            const countElement = document.getElementById('postCount');
+            
+            countElement.textContent = posts.length;
+            
+            if (posts.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">هنوز پستی وجود ندارد. دکمه "تولید ۱۶۲ پست نمونه" را کلیک کنید.</p>';
+                return;
+            }
+
+            container.innerHTML = posts.map(post => `
+                <div class="post-card">
+                    <div class="post-title">${post.title}</div>
+                    <div class="post-content">${post.content}</div>
+                    <div class="post-meta">
+                        <strong>دسته:</strong> ${post.category} | 
+                        <strong>تگ‌ها:</strong> ${post.tags.join(', ')}<br>
+                        <strong>تاریخ:</strong> ${new Date(post.createdAt).toLocaleString('fa-IR')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // بارگذاری پست‌ها هنگام لود صفحه
+        document.addEventListener('DOMContentLoaded', loadPosts);
+    </script>
+</body>
+</html>
