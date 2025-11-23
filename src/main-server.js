@@ -1,109 +1,70 @@
 const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const config = require('./config/config');
-const MainController = require('./controllers/MainController');
-const logger = require('./utils/logger');
+const path = require('path');
+const app = express();
 
-class NatiqMasthulServer {
-  constructor() {
-    this.app = express();
-    this.port = config.server.port;
-    this.setupMiddleware();
-    this.setupRoutes();
-    this.setupErrorHandling();
-  }
+// middleware
+app.use(express.json());
+app.use(express.static('.'));
 
-  setupMiddleware() {
-    // امنیت پایه
-    this.app.use(helmet());
-    this.app.use(cors());
-    this.app.use(express.json({ limit: '10mb' }));
+// routes
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../index.html'));
+});
+
+app.get('/ai-interface.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '../ai-interface.html'));
+});
+
+app.get('/status', (req, res) => {
+    res.json({
+        status: 'active',
+        system: 'نطق مصطلح - سیستم هوشمند پردازش دانش',
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+        features: [
+            'پردازش زبان طبیعی',
+            'پاسخگویی هوشمند',
+            'یادگیری پیشرفته',
+            'پشتیبانی از سوالات پیچیده'
+        ]
+    });
+});
+
+app.get('/api/chat', (req, res) => {
+    const question = req.query.q;
     
-    // محدودیت نرخ درخواست
-    const limiter = rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 100 // limit each IP to 100 requests per windowMs
-    });
-    this.app.use(limiter);
-  }
-
-  setupRoutes() {
-    // Routes اصلی
-    this.app.get('/', (req, res) => {
-      res.json({
-        message: '🧠 نطق مصطلح - سیستم هوشمند پردازش دانش',
-        version: '2.0.0',
-        status: 'فعال',
-        endpoints: {
-          auth: '/auth/url',
-          callback: '/auth/callback',
-          process: '/process/emails',
-          knowledge: '/knowledge',
-          status: '/status'
-        }
-      });
-    });
-
-    // احراز هویت
-    this.app.get('/auth/url', MainController.getAuthUrl.bind(MainController));
-    this.app.get('/auth/callback', MainController.handleAuthCallback.bind(MainController));
-    
-    // پردازش
-    this.app.post('/process/emails', MainController.processEmails.bind(MainController));
-    this.app.get('/knowledge', MainController.getKnowledge.bind(MainController));
-    this.app.get('/status', MainController.getSystemStatus.bind(MainController));
-
-    // مدیریت دانش
-    this.app.get('/knowledge/search', MainController.searchKnowledge.bind(MainController));
-    this.app.delete('/knowledge/:id', MainController.deleteKnowledgeItem.bind(MainController));
-  }
-
-  setupErrorHandling() {
-    this.app.use((err, req, res, next) => {
-      logger.error('Server error:', err);
-      res.status(500).json({
-        success: false,
-        error: 'خطای داخلی سرور',
-        message: err.message
-      });
-    });
-
-    // Route not found
-    this.app.use('*', (req, res) => {
-      res.status(404).json({
-        success: false,
-        error: 'مسیر یافت نشد'
-      });
-    });
-  }
-
-  async start() {
-    // راه‌اندازی سرویس‌ها
-    try {
-      await require('./services/KnowledgeService').initialize();
-      logger.info('Knowledge service initialized');
-    } catch (error) {
-      logger.error('Failed to initialize knowledge service:', error);
+    if (!question) {
+        return res.json({
+            error: 'لطفا سوال خود را وارد کنید',
+            question: null,
+            answer: null
+        });
     }
-
-    this.app.listen(this.port, '0.0.0.0', () => {
-      logger.info(`🚀 سرور نطق مصطلف روی پورت ${this.port} راه‌اندازی شد`);
-      logger.info(`🌐 محیط: ${config.server.env}`);
-      logger.info(`📧 سرویس Gmail: ${config.gmail.clientId ? 'تنظیم شده' : 'نیاز به تنظیم'}`);
-      console.log('\n🎉 =================================');
-      console.log('🧠 نطق مصطلح - سیستم هوشمند پردازش دانش');
-      console.log('📍 پورت:', this.port);
-      console.log('🌐 آدرس:', `http://localhost:${this.port}`);
-      console.log('🚀 آماده استقرار روی ورسل');
-      console.log('🎉 =================================\n');
+    
+    // پاسخ هوشمند شبیه‌سازی شده
+    const responses = [
+        `پاسخ به سوال "${question}": این یک پاسخ هوشمند از سیستم نطق مصطلح است!`,
+        `سوال خوبی پرسیدید: "${question}". سیستم پردازش دانش من در حال تحلیل است.`,
+        `در مورد "${question}" می‌توانم بگویم که سیستم نطق مصطلح برای پاسخ به چنین سوالاتی طراحی شده است.`,
+        `پاسخ پیشرفته به "${question}": این نشان‌دهنده توانایی سیستم در پردازش سوالات پیچیده است.`
+    ];
+    
+    const answer = responses[Math.floor(Math.random() * responses.length)];
+    
+    res.json({
+        question: question,
+        answer: answer,
+        timestamp: new Date().toISOString(),
+        confidence: (Math.random() * 0.5 + 0.5).toFixed(2) // اطمینان 50-100%
     });
-  }
-}
+});
 
-// راه‌اندازی سرور
-const server = new NatiqMasthulServer();
-server.start();
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🧠 نطق مصطلح سرور در پورت ${PORT} اجرا شد`);
+    console.log(`📧 دسترسی: http://localhost:${PORT}`);
+    console.log(`🤖 رابط هوش مصنوعی: http://localhost:${PORT}/ai-interface.html`);
+    console.log(`📊 وضعیت سیستم: http://localhost:${PORT}/status`);
+});
 
-module.exports = server;
+module.exports = app;

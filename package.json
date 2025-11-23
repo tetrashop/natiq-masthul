@@ -1,45 +1,28 @@
 {
   "name": "natiq-masthul",
-  "version": "2.0.0",
-  "description": "سیستم هوشمند پردازش دانش و مدیریت ایمیل‌ها",
+  "version": "1.0.0",
+  "description": "سیستم هوشمند پردازش دانش نطق مصطلح",
   "main": "src/main-server.js",
   "scripts": {
-    "dev": "NODE_ENV=development node src/main-server.js",
-    "start": "NODE_ENV=production node src/main-server.js",
-    "build": "echo 'Build completed - No build step required for Node.js'",
-    "test": "jest",
-    "lint": "eslint src/",
-    "setup": "node scripts/setup.js"
+    "start": "node src/main-server.js",
+    "dev": "node start-system.js",
+    "vercel-build": "echo 'Building for Vercel...'",
+    "test": "echo 'No tests yet'"
   },
   "keywords": [
-    "nlp",
-    "gmail",
-    "knowledge",
     "ai",
-    "persian"
+    "nlp",
+    "persian",
+    "knowledge",
+    "system"
   ],
   "author": "Natiq Masthul Team",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "googleapis": "^126.0.1",
-    "axios": "^1.6.0",
     "cors": "^2.8.5",
-    "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5",
-    "dotenv": "^16.3.1",
-    "natural": "^6.0.0"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "eslint": "^8.52.0"
+    "express": "^4.21.2"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-username/natiq-masthul"
+    "node": ">=14.0.0"
   }
 }

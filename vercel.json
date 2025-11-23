@@ -16,8 +16,20 @@
       "dest": "/index.html"
     },
     {
+      "src": "/ai-interface.html",
+      "dest": "/ai-interface.html"
+    },
+    {
+      "src": "/status",
+      "dest": "/src/main-server.js"
+    },
+    {
+      "src": "/api/chat",
+      "dest": "/src/main-server.js"
+    },
+    {
       "src": "/(.*)",
-      "dest": "src/main-server.js"
+      "dest": "/src/main-server.js"
     }
   ]
 }
