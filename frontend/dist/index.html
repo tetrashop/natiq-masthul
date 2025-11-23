@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>سامانه مدیریت دانش و پردازش زبان طبیعی</title>
+    <meta name="description" content="سیستم یکپارچه مدیریت دانش و پردازش زبان طبیعی" />
+    <style>
+      /* Loading styles */
+      #root-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-3d5f834b.js"></script>
+    <link rel="stylesheet" href="/assets/index-48767443.css">
+  </head>
+  <body>
+    <div id="root-loading">
+      <div style="text-align: center;">
+        <div class="loading-spinner"></div>
+        <p style="margin-top: 1rem;">در حال راه‌اندازی سامانه...</p>
+      </div>
+    </div>
+    <div id="root"></div>
+    
+  </body>
+</html>

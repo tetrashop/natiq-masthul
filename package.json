@@ -1,21 +1,45 @@
 {
   "name": "natiq-masthul",
   "version": "2.0.0",
-  "description": "نطق مصطلح - پایگاه دانش عظیم متصل به Google Drive",
-  "main": "server.js",
+  "description": "سیستم هوشمند پردازش دانش و مدیریت ایمیل‌ها",
+  "main": "src/main-server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "NODE_ENV=development node src/main-server.js",
+    "start": "NODE_ENV=production node src/main-server.js",
+    "build": "echo 'Build completed - No build step required for Node.js'",
+    "test": "jest",
+    "lint": "eslint src/",
+    "setup": "node scripts/setup.js"
   },
+  "keywords": [
+    "nlp",
+    "gmail",
+    "knowledge",
+    "ai",
+    "persian"
+  ],
+  "author": "Natiq Masthul Team",
+  "license": "MIT",
   "dependencies": {
-    "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12",
-    "express": "^4.21.2",
+    "express": "^4.18.2",
     "googleapis": "^126.0.1",
-    "mongoose": "^9.0.0",
-    "natural": "^6.3.0"
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "dotenv": "^16.3.1",
+    "natural": "^6.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.52.0"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/natiq-masthul"
   }
 }

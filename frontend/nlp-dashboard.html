@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>NLP Dashboard</title>
+    <style>
+        body { font-family: Tahoma; margin: 20px; background: #f0f8ff; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; background: #4CAF50; color: white; padding: 20px; border-radius: 10px; }
+        .card { background: white; margin: 15px 0; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn { background: #2196F3; color: white; border: none; padding: 10px 15px; margin: 5px; border-radius: 5px; cursor: pointer; }
+        .keyword { display: inline-block; background: #e3f2fd; padding: 5px 10px; margin: 3px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>NLP Analytics Dashboard</h1>
+            <p>Analysis of 162 NLP Posts</p>
+        </div>
+        
+        <div class="card">
+            <button class="btn" onclick="generatePosts()">Generate Posts</button>
+            <button class="btn" onclick="loadAnalytics()">Show Analytics</button>
+            <button class="btn" onclick="analyzeSentiment()">Sentiment Analysis</button>
+            <button class="btn" onclick="extractKeywords()">Extract Keywords</button>
+        </div>
+        
+        <div id="results" class="card"></div>
+    </div>
+
+    <script>
+        async function generatePosts() {
+            const res = await fetch('/api/nlp/generate-samples', {method: 'POST'});
+            const data = await res.json();
+            showResult('SUCCESS: ' + data.message);
+        }
+
+        async function loadAnalytics() {
+            const res = await fetch('/api/nlp/analytics-dashboard');
+            const data = await res.json();
+            
+            let html = '<h3>Analytics Overview</h3>';
+            html += '<p>Total Posts: <strong>' + data.totalPosts + '</strong></p>';
+            html += '<p>Total Words: <strong>' + data.totalWords + '</strong></p>';
+            html += '<p>Total Characters: <strong>' + data.totalChars + '</strong></p>';
+            
+            html += '<h4>Categories:</h4>';
+            for(const cat in data.categories) {
+                html += '<div>' + cat + ': ' + data.categories[cat] + ' posts</div>';
+            }
+            
+            showResult(html);
+        }
+
+        async function analyzeSentiment() {
+            const res = await fetch('/api/nlp/sentiment-analysis');
+            const data = await res.json();
+            
+            let html = '<h3>Sentiment Analysis</h3>';
+            html += '<p>Total Posts Analyzed: <strong>' + data.total + '</strong></p>';
+            
+            for(const label in data.stats) {
+                html += '<div>' + label + ': ' + data.stats[label] + ' posts</div>';
+            }
+            
+            showResult(html);
+        }
+
+        async function extractKeywords() {
+            const res = await fetch('/api/nlp/persian-keywords');
+            const data = await res.json();
+            
+            let html = '<h3>Top Keywords</h3>';
+            html += '<p>Total Tokens: ' + data.totalTokens + '</p>';
+            html += '<p>Unique Words: ' + data.uniqueWords + '</p>';
+            
+            data.topKeywords.forEach(kw => {
+                html += '<span class="keyword">' + kw.word + ' (' + kw.count + ')</span>';
+            });
+            
+            showResult(html);
+        }
+
+        function showResult(content) {
+            document.getElementById('results').innerHTML = content;
+        }
+    </script>
+</body>
+</html>

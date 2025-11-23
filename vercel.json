@@ -2,14 +2,23 @@
   "version": 2,
   "builds": [
     {
-      "src": "server.js",
+      "src": "src/main-server.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "server.js"
+      "dest": "src/main-server.js"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "functions": {
+    "src/main-server.js": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  }
 }

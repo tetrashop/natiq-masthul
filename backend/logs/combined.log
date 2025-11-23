@@ -128,3 +128,4 @@ Error: querySrv ENOTFOUND _mongodb._tcp.cluster0.xxxxx.mongodb.net
 🕒 زمان: ۱۴۰۴/۹/۱, ۲۰:۲۳:۳۸
 📡 آدرس: http://localhost:3003 و http://192.168.1.102:3003
         
+2025-11-22 22:05:16 [INFO]: 👋 دریافت SIGTERM. بستن سرور به صورت graceful...
