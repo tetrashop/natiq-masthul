@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧠 نطق مصطلح - رابط هوش مصنوعی پیشرفته</title>
+    <title>🧠 نطق مصطلح - سیستم هوشمند واقعی</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -36,9 +36,10 @@
         
         .message { 
             margin-bottom: 15px; padding: 15px; 
-            border-radius: 15px; max-width: 80%;
+            border-radius: 15px; max-width: 85%;
             animation: fadeIn 0.3s ease;
             line-height: 1.6;
+            white-space: pre-line;
         }
         .user-message { 
             background: #3498db; color: white;
@@ -47,6 +48,16 @@
         .ai-message { 
             background: #ecf0f1; color: #2c3e50;
             margin-right: auto; border: 1px solid #ddd;
+        }
+        
+        .analysis-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #666;
+            border-right: 3px solid #3498db;
         }
         
         .input-area {
@@ -84,36 +95,64 @@
             text-align: left;
         }
         
-        .system-info {
-            background: #f8f9fa; padding: 10px; border-radius: 10px;
-            margin-top: 10px; font-size: 0.9rem; color: #666;
-            border-right: 3px solid #3498db;
+        .suggestions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .suggestion-chip {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .suggestion-chip:hover {
+            background: #bbdefb;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧠 نطق مصطلح - نسخه پیشرفته</h1>
-            <p>سیستم هوشمند پردازش دانش با قابلیت درک واقعی مکالمه</p>
+            <h1>🧠 نطق مصطلح - نسخه هوشمند</h1>
+            <p>سیستمی که واقعاً می‌فهمد و صادقانه پاسخ می‌دهد</p>
         </div>
         
         <div class="chat-container">
             <div class="messages" id="messages">
                 <div class="message ai-message">
-                    درود! 👋 من نطق مصطلح هستم، سیستم هوشمند پردازش دانش.<br>
-                    اکنون می‌توانم سوالات شما را درک کنم و پاسخ‌های مرتبط بدهم.
+                    🌟 درود! من نطق مصطلح هستم، حالا واقعاً هوشمندتر شده‌ام!
+                    
+                    • اشتباهات تایپی شما رو تصحیح می‌کنم
+                    • سوالات شما رو عمیق‌تر تحلیل می‌کنم  
+                    • اگر چیزی رو نمی‌دانم، صادقانه می‌گویم
+                    • به حریم شخصی احترام می‌گذارم
+                    
+                    بپرسید، مشتاق کمک کردن به شما هستم!
                     <div class="message-time">هم اکنون</div>
                 </div>
             </div>
             
+            <div class="suggestions" id="suggestions">
+                <div class="suggestion-chip" onclick="insertSuggestion('رامین اجلال چه دستاوردهایی دارد؟')">دستاوردهای رامین اجلال</div>
+                <div class="suggestion-chip" onclick="insertSuggestion('در چه زمینه‌هایی می‌تونی کمک کنی؟')">حوزه‌های تخصصی</div>
+                <div class="suggestion-chip" onclick="insertSuggestion('محدودیت‌های تو چیست؟')">محدودیت‌های سیستم</div>
+            </div>
+            
             <div class="typing-indicator" id="typing">
-                در حال پردازش سوال...
+                🔍 در حال تحلیل عمیق سوال...
             </div>
             
             <div class="input-area">
                 <input type="text" id="userInput" 
-                       placeholder="سوال خود را اینجا بنویسید (مثال: سلام، من را می‌شناسی؟)" 
+                       placeholder="هر سوالی دارید بپرسید... (حتی با غلط تایپی)" 
                        onkeypress="handleKeyPress(event)">
                 <button onclick="sendMessage()">ارسال</button>
             </div>
@@ -121,29 +160,17 @@
     </div>
 
     <script>
-        let conversationHistory = [];
-        
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-        
         async function sendMessage() {
             const input = document.getElementById('userInput');
             const message = input.value.trim();
             
             if (!message) return;
             
-            // نمایش پیام کاربر
             addMessage(message, 'user');
             input.value = '';
-            
-            // نمایش تایپینگ
             showTyping();
             
             try {
-                // ارسال به API پیشرفته
                 const response = await fetch('/api/chat?q=' + encodeURIComponent(message));
                 const data = await response.json();
                 
@@ -152,19 +179,21 @@
                 if (data.answer) {
                     addMessage(data.answer, 'ai');
                     
-                    // نمایش اطلاعات پردازش (اختیاری)
-                    if (data.processed) {
-                        const analysis = `تشخیص هدف: ${data.processed.intent} | موجودیت‌ها: ${JSON.stringify(data.processed.entities)}`;
-                        addSystemInfo(analysis);
+                    // نمایش تحلیل پیشرفته
+                    if (data.analysis) {
+                        const analysisText = 
+                            `تصحیح سوال: "${data.analysis.corrected_question || data.question}"\n` +
+                            `هدف تشخیص داده شده: ${data.analysis.true_intent}\n` +
+                            `اطلاعات موجود: ${data.analysis.knowledge_available ? '✅' : '❌'}\n` +
+                            `اعتماد سیستم: ${(data.analysis.confidence * 100).toFixed(0)}%`;
+                        
+                        addAnalysis(analysisText);
                     }
-                } else {
-                    addMessage('پاسخی دریافت نشد. لطفاً دوباره تلاش کنید.', 'ai');
                 }
                 
             } catch (error) {
                 hideTyping();
-                addMessage('خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.', 'ai');
-                console.error('Error:', error);
+                addMessage('⚠️ خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.', 'ai');
             }
         }
         
@@ -174,26 +203,27 @@
             messageDiv.className = `message ${sender}-message`;
             
             const time = new Date().toLocaleTimeString('fa-IR');
-            
-            messageDiv.innerHTML = `
-                ${text}
-                <div class="message-time">${time}</div>
-            `;
+            messageDiv.innerHTML = `${text}<div class="message-time">${time}</div>`;
             
             messages.appendChild(messageDiv);
             messages.scrollTop = messages.scrollHeight;
-            
-            // ذخیره در تاریخچه
-            conversationHistory.push({ sender, text, time });
         }
         
-        function addSystemInfo(info) {
+        function addAnalysis(info) {
             const messages = document.getElementById('messages');
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'system-info';
-            infoDiv.textContent = `🔍 ${info}`;
-            messages.appendChild(infoDiv);
+            const analysisDiv = document.createElement('div');
+            analysisDiv.className = 'analysis-panel';
+            analysisDiv.textContent = `🔍 ${info}`;
+            messages.appendChild(analysisDiv);
             messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function insertSuggestion(text) {
+            document.getElementById('userInput').value = text;
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') sendMessage();
         }
         
         function showTyping() {
@@ -203,19 +233,6 @@
         function hideTyping() {
             document.getElementById('typing').style.display = 'none';
         }
-        
-        // نمونه سوالات پیشنهادی
-        const sampleQuestions = [
-            "سلام، حالتون خوبه؟",
-            "لطفاً خودت رو معرفی کن",
-            "من رو می‌شناسی؟",
-            "رامین اجلال کیست؟",
-            "در مورد هوش مصنوعی توضیح بده"
-        ];
-        
-        // نمایش نمونه سوالات در کنسول برای تست
-        console.log('🧠 نمونه سوالات برای تست:');
-        sampleQuestions.forEach((q, i) => console.log(`${i + 1}. ${q}`));
     </script>
 </body>
 </html>
