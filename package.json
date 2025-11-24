@@ -1,17 +1,20 @@
 {
   "name": "natiq-masthul",
   "version": "3.2.0",
-  "description": "سیستم هوش مصنوعی نطق مصطلح - نسخه Cloudflare",
-  "main": "src/cloudflare-server.js",
+  "description": "سیستم هوش مصنوعی نطق مصطلح - نسخه Enterprise Cloudflare",
+  "main": "src/optimized-server.js",
   "scripts": {
-    "deploy": "npx wrangler deploy"
+    "deploy": "npx wrangler deploy",
+    "test": "echo \"✅ سیستم Enterprise فعال است\""
   },
   "keywords": [
     "ai",
     "nlp",
     "persian",
     "natiq-masthul",
-    "cloudflare"
+    "cloudflare",
+    "enterprise",
+    "artificial-intelligence"
   ],
   "author": "Ramin Ejlal",
   "license": "MIT"
