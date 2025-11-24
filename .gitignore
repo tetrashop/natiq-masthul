@@ -1,1 +1,20 @@
-.vercel
+# فایل‌های موقت و دیباگ
+debug-*.js
+*.log
+*.tmp
+
+# پوشه‌های آزمایشی (اختیاری - می‌تونید اضافه کنید اگه لازم نیست)
+# src/ai-core/
+# src/architecture/
+# src/simple-test-server.js
+
+# فایل‌های سیستم
+node_modules/
+.DS_Store
+.env
+*.local
+
+# لاگ‌ها
+logs/
+*.log
+npm-debug.log*
