@@ -1,26 +1,26 @@
 {
   "name": "natiq-masthul",
   "version": "3.2.0",
-  "description": "سیستم هوش مصنوعی نطق مصطلح - نسخه درآمدزا",
-  "main": "src/comprehensive-server.js",
+  "description": "سیستم هوش مصنوعی نطق مصطلح - نسخه Cloudflare",
+  "main": "src/cloudflare-server.js",
   "scripts": {
-    "start": "node src/comprehensive-server.js",
-    "dev": "node src/comprehensive-server.js",
-    "test": "echo \"✅ سیستم فعال است\" && curl -s http://localhost:3001/health"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "echo \"✅ سیستم Cloudflare فعال است\""
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "wrangler": "^3.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.0.0"
   },
   "keywords": [
     "ai",
     "nlp",
     "persian",
-    "natiq-masthul"
+    "natiq-masthul",
+    "cloudflare"
   ],
   "author": "Ramin Ejlal",
-  "license": "MIT",
-  "engines": {
-    "node": ">=16.0.0"
-  }
+  "license": "MIT"
 }
