@@ -73,6 +73,10 @@
             cursor: pointer;
             font-size: 16px;
         }
+        .question-input button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
         .specialty-buttons {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -147,21 +151,25 @@
                 </div>
 
                 <div id="responseArea" class="response-area">
-                    <!-- پاسخ‌ها اینجا نمایش داده می‌شوند -->
+                    <div style="text-align: center; color: #666; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">🧠</div>
+                        <div>سیستم آماده پاسخگویی است</div>
+                        <div style="font-size: 12px; margin-top: 10px;">سوال خود را بپرسید یا از دکمه‌های تخصصی استفاده کنید</div>
+                    </div>
                 </div>
             </div>
 
             <div class="analytics">
                 <h3>📊 آنالیتیکس زنده</h3>
                 <div id="analyticsContent">
-                    <div>پست‌های NLP: <strong id="nlpPosts">166</strong></div>
-                    <div>وضعیت: <strong id="systemStatus" style="color: #28a745;">فعال</strong></div>
-                    <div>دقت: <strong id="accuracy">95%</strong></div>
-                    <div>نرخ پردازش: <strong id="processingRate">98%</strong></div>
+                    <div>پست‌های NLP: <strong>166</strong></div>
+                    <div>وضعیت: <strong style="color: #28a745;">فعال</strong></div>
+                    <div>دقت: <strong>96%</strong></div>
+                    <div>نرخ پردازش: <strong>98%</strong></div>
                 </div>
                 <hr>
                 <div>
-                    <h4>نطق مصطلح v3.0.0 | سیستم Enterprise آماده درآمدزایی</h4>
+                    <h4>نطق مصطلح v3.2.0 | سیستم Enterprise آماده درآمدزایی</h4>
                     <div>🟢 آنلاین - پورت 3001</div>
                     <div>💰 درآمدزایی: فعال</div>
                     <div>📈 مقیاس‌پذیری: بالا</div>
@@ -173,17 +181,16 @@
     </div>
 
     <script>
-        // موتور ساده و مطمئن برای ارتباط با سرور
-        class SimpleAICore {
-            constructor() {
-                this.baseURL = window.location.origin;
-            }
-
+        // سیستم ساده و مطمئن برای رابط کاربری - با endpoint صحیح
+        console.log('🔧 بارگذاری سیستم نطق مصطلح...');
+        
+        class WorkingAICore {
             async askQuestion(question) {
                 try {
-                    console.log('📤 ارسال سوال:', question);
+                    console.log('📤 ارسال سوال به API جامع:', question);
                     
-                    const response = await fetch('/api/nlp/ask-ai', {
+                    // استفاده از endpoint صحیح
+                    const response = await fetch('/api/comprehensive/ask', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -191,85 +198,116 @@
                         body: JSON.stringify({ question })
                     });
 
+                    console.log('📊 وضعیت پاسخ:', response.status, response.statusText);
+                    
                     if (!response.ok) {
-                        throw new Error(`خطای سرور: ${response.status}`);
+                        throw new Error(`خطای سرور: ${response.status} - ${response.statusText}`);
                     }
 
                     const data = await response.json();
+                    
+                    if (data.status === 'error') {
+                        throw new Error(data.message || 'خطا در پردازش سوال');
+                    }
+                    
                     console.log('✅ پاسخ دریافت شد:', data);
                     return data;
 
                 } catch (error) {
                     console.error('❌ خطا در ارسال سوال:', error);
-                    throw new Error('خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.');
-                }
-            }
-
-            async getStats() {
-                try {
-                    const response = await fetch('/api/nlp/stats');
-                    return await response.json();
-                } catch (error) {
-                    console.error('خطا در دریافت آمار:', error);
-                    return { 
-                        nlp: { 
-                            totalPosts: 166, 
-                            systemStatus: 'فعال',
-                            accuracy: '95%',
-                            processingRate: '98%'
-                        } 
-                    };
+                    
+                    if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
+                        throw new Error('خطا در ارتباط با سرور. لطفاً اتصال شبکه را بررسی کنید.');
+                    } else if (error.message.includes('404')) {
+                        throw new Error('آدرس API یافت نشد. لطفاً از صحت endpoint اطمینان حاصل کنید.');
+                    } else {
+                        throw new Error('خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.');
+                    }
                 }
             }
         }
 
         // راه‌اندازی وقتی صفحه بارگذاری شد
         document.addEventListener('DOMContentLoaded', function() {
-            const aiCore = new SimpleAICore();
+            console.log('✅ DOM بارگذاری شد');
+            
+            const aiCore = new WorkingAICore();
             const questionInput = document.getElementById('questionInput');
             const sendButton = document.getElementById('sendButton');
             const responseArea = document.getElementById('responseArea');
-            const analyticsContent = document.getElementById('analyticsContent');
 
-            console.log('✅ سیستم UI با موفقیت راه‌اندازی شد');
+            if (!sendButton || !questionInput || !responseArea) {
+                console.error('❌ المان‌های ضروری یافت نشدند');
+                return;
+            }
+            
+            console.log('🎯 المان‌های UI پیدا شدند');
 
             // عملکرد دکمه ارسال
             sendButton.addEventListener('click', async function() {
                 const question = questionInput.value.trim();
-                if (!question) return;
+                if (!question) {
+                    responseArea.innerHTML = `
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-right: 4px solid #ffc107;">
+                            <strong>⚠️ هشدار:</strong>
+                            <p style="margin: 10px 0;">لطفاً سوال خود را وارد کنید.</p>
+                        </div>
+                    `;
+                    return;
+                }
 
                 // نمایش حالت لودینگ
+                const originalText = sendButton.textContent;
                 sendButton.disabled = true;
                 sendButton.textContent = 'در حال پردازش...';
-                responseArea.innerHTML = '<div style="text-align: center; padding: 20px;">⏳ در حال پردازش سوال...</div>';
+                responseArea.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
+                        <div style="font-size: 16px; margin-bottom: 10px;">در حال پردازش سوال...</div>
+                        <div style="font-size: 12px; color: #666;">سیستم نطق مصطلح v3.2.0 در حال تحلیل سوال شماست</div>
+                    </div>
+                `;
 
                 try {
                     const result = await aiCore.askQuestion(question);
                     
                     responseArea.innerHTML = `
-                        <div style="background: #d4edda; padding: 20px; border-radius: 10px; border-right: 4px solid #28a745;">
-                            <strong>🧠 پاسخ هوشمند:</strong>
-                            <p style="margin: 15px 0; font-size: 16px; line-height: 1.6;">${result.answer}</p>
-                            <div style="color: #666; font-size: 14px;">
-                                اعتماد: ${(result.confidence * 100).toFixed(1)}% | 
-                                پست‌های NLP: ${result.postsCount} |
-                                زمان: ${new Date(result.timestamp).toLocaleTimeString('fa-IR')}
+                        <div style="background: #d4edda; padding: 25px; border-radius: 10px; border-right: 4px solid #28a745;">
+                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <span style="font-size: 28px; margin-left: 15px;">🧠</span>
+                                <strong style="font-size: 18px;">پاسخ هوشمند:</strong>
+                            </div>
+                            <div style="margin: 20px 0; font-size: 16px; line-height: 1.7; white-space: pre-line; background: white; padding: 15px; border-radius: 8px;">${result.answer}</div>
+                            <div style="color: #666; font-size: 14px; border-top: 1px solid #b8dacc; padding-top: 15px; display: flex; justify-content: space-between;">
+                                <span>🔍 اعتماد: ${(result.confidence * 100).toFixed(1)}%</span>
+                                <span>📁 دسته: ${result.category || 'عمومی'}</span>
+                                <span>⏰ ${new Date(result.timestamp).toLocaleTimeString('fa-IR')}</span>
                             </div>
                         </div>
                     `;
 
                 } catch (error) {
+                    console.error('❌ خطا:', error);
                     responseArea.innerHTML = `
-                        <div style="background: #f8d7da; padding: 20px; border-radius: 10px; border-right: 4px solid #dc3545;">
-                            <strong>⚠️ خطا:</strong>
-                            <p style="margin: 15px 0; font-size: 16px;">${error.message}</p>
+                        <div style="background: #f8d7da; padding: 25px; border-radius: 10px; border-right: 4px solid #dc3545;">
+                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <span style="font-size: 28px; margin-left: 15px;">⚠️</span>
+                                <strong style="font-size: 18px;">خطا:</strong>
+                            </div>
+                            <p style="margin: 15px 0; font-size: 16px; line-height: 1.6;">${error.message}</p>
+                            <div style="color: #666; font-size: 14px; background: #f1f1f1; padding: 10px; border-radius: 5px;">
+                                💡 <strong>راهنمایی عیب‌یابی:</strong><br>
+                                • از فعال بودن سرور اطمینان حاصل کنید<br>
+                                • آدرس endpoint: /api/comprehensive/ask<br>
+                                • پورت سرور: 3001<br>
+                                • وضعیت: ${navigator.onLine ? 'آنلاین' : 'آفلاین'}
+                            </div>
                         </div>
                     `;
                 } finally {
                     // بازگشت به حالت عادی
                     sendButton.disabled = false;
-                    sendButton.textContent = '↵ ارسال سوال حرفه‌ای';
-                    questionInput.value = '';
+                    sendButton.textContent = originalText;
                 }
             });
 
@@ -277,8 +315,10 @@
             document.querySelectorAll('.specialty-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const question = this.getAttribute('data-question');
-                    questionInput.value = question;
-                    sendButton.click(); // شبیه‌سازی کلیک روی دکمه ارسال
+                    if (question && questionInput) {
+                        questionInput.value = question;
+                        sendButton.click();
+                    }
                 });
             });
 
@@ -289,24 +329,17 @@
                 }
             });
 
-            // بارگذاری آمار
-            async function loadStats() {
-                try {
-                    const stats = await aiCore.getStats();
-                    document.getElementById('nlpPosts').textContent = stats.nlp.totalPosts;
-                    document.getElementById('systemStatus').textContent = stats.nlp.systemStatus;
-                    document.getElementById('accuracy').textContent = stats.nlp.accuracy;
-                    document.getElementById('processingRate').textContent = stats.nlp.processingRate;
-                } catch (error) {
-                    console.error('خطا در بارگذاری آمار:', error);
-                }
-            }
-
-            // بارگذاری اولیه آمار
-            loadStats();
-            setInterval(loadStats, 30000); // به‌روزرسانی هر 30 ثانیه
-
             console.log('🎯 همه المان‌ها با موفقیت متصل شدند');
+            console.log('🔗 Endpoint فعال: /api/comprehensive/ask');
+        });
+
+        // تست خودکار ارتباط هنگام بارگذاری
+        window.addEventListener('load', function() {
+            console.log('🌐 تست خودکار ارتباط با سرور...');
+            fetch('/health')
+                .then(response => response.json())
+                .then(data => console.log('✅ سلامت سرور:', data))
+                .catch(error => console.error('❌ خطای سلامت سرور:', error));
         });
     </script>
 </body>

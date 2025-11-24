@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تست ساده - نطق مصطلح</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .input-group button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-group button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 50px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 تست ساده نطق مصطلح</h1>
+        <p>این یک صفحه تست ساده برای بررسی ارتباط با سرور است.</p>
+        
+        <div class="input-group">
+            <input type="text" id="questionInput" placeholder="سوال خود را اینجا تایپ کنید...">
+            <button id="sendButton">ارسال سوال</button>
+        </div>
+        
+        <div>
+            <button class="test-btn" data-question="سلام">سلام</button>
+            <button class="test-btn" data-question="تحصیلات">تحصیلات</button>
+            <button class="test-btn" data-question="تخصص">تخصص</button>
+        </div>
+        
+        <div id="responseArea" class="response">
+            پاسخ اینجا نمایش داده می‌شود...
+        </div>
+        
+        <div style="margin-top: 20px; font-size: 12px; color: #666;">
+            <strong>اطلاعات دیباگ:</strong>
+            <div id="debugInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🔧 بارگذاری اسکریپت تست ساده...');
+
+        // تابع بسیار ساده برای تست
+        async function testConnection(question) {
+            try {
+                console.log('🧪 تست ارتباط با سرور...', question);
+                const response = await fetch('/api/universal/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                console.log('📊 وضعیت پاسخ:', response.status, response.statusText);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ تست موفق:', data);
+                    return data;
+                } else {
+                    console.error('❌ خطای سرور:', response.status);
+                    throw new Error(`خطای سرور: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('❌ خطای شبکه:', error);
+                throw error;
+            }
+        }
+
+        // وقتی صفحه بارگذاری شد
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM بارگذاری شد');
+            
+            const sendButton = document.getElementById('sendButton');
+            const questionInput = document.getElementById('questionInput');
+            const responseArea = document.getElementById('responseArea');
+            const debugInfo = document.getElementById('debugInfo');
+            
+            if (!sendButton || !questionInput) {
+                console.error('❌ المان‌های ضروری یافت نشدند');
+                return;
+            }
+            
+            console.log('🎯 المان‌های UI پیدا شدند');
+            
+            // عملکرد دکمه ارسال
+            sendButton.addEventListener('click', async function() {
+                const question = questionInput.value.trim();
+                
+                if (!question) {
+                    alert('لطفاً سوال خود را وارد کنید');
+                    return;
+                }
+                
+                // نمایش حالت لودینگ
+                sendButton.disabled = true;
+                sendButton.textContent = 'در حال پردازش...';
+                
+                if (responseArea) {
+                    responseArea.innerHTML = '<div style="padding: 20px; text-align: center;">⏳ در حال ارسال سوال به سرور...</div>';
+                    responseArea.className = 'response';
+                }
+                
+                try {
+                    const result = await testConnection(question);
+                    
+                    if (responseArea) {
+                        responseArea.innerHTML = `
+                            <div>
+                                <strong>✅ پاسخ سرور:</strong>
+                                <p>${result.answer}</p>
+                                <small>اعتماد: ${result.confidence * 100}% | زمان: ${new Date(result.timestamp).toLocaleTimeString('fa-IR')}</small>
+                            </div>
+                        `;
+                        responseArea.className = 'response success';
+                    }
+                    
+                    if (debugInfo) {
+                        debugInfo.innerHTML = `آخرین درخواست: موفق - ${new Date().toLocaleTimeString('fa-IR')}`;
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ خطا:', error);
+                    
+                    if (responseArea) {
+                        responseArea.innerHTML = `
+                            <div>
+                                <strong>⚠️ خطا:</strong>
+                                <p>${error.message}</p>
+                                <small>لطفاً از فعال بودن سرور اطمینان حاصل کنید</small>
+                            </div>
+                        `;
+                        responseArea.className = 'response error';
+                    }
+                    
+                    if (debugInfo) {
+                        debugInfo.innerHTML = `آخرین درخواست: خطا - ${error.message} - ${new Date().toLocaleTimeString('fa-IR')}`;
+                    }
+                } finally {
+                    // بازگشت به حالت عادی
+                    sendButton.disabled = false;
+                    sendButton.textContent = 'ارسال سوال';
+                }
+            });
+            
+            // عملکرد دکمه‌های تست
+            document.querySelectorAll('.test-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    if (question && questionInput) {
+                        questionInput.value = question;
+                        sendButton.click();
+                    }
+                });
+            });
+            
+            console.log('🎯 سیستم UI ساده راه‌اندازی شد');
+        });
+    </script>
+</body>
+</html>
