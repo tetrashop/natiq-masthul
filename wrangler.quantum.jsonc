@@ -1,0 +1,22 @@
+{
+  "name": "natiq-masthul-quantum",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "src/quantum-server.js",
+  "observability": {
+    "enabled": true,
+    "head sampling": 1.0
+  },
+  "vars": {
+    "NODE_ENV": "production",
+    "VERSION": "4.0.0-Quantum",
+    "SYSTEM_TYPE": "mathematical-optimization",
+    "ALGORITHM_VERSION": "quantum-inspired-v1"
+  },
+  "metrics": {
+    "enabled": true
+  },
+  "analytics_engine": {
+    "enabled": true
+  }
+}
