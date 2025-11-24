@@ -1,0 +1,18 @@
+{
+  "name": "natiq-masthul-advanced",
+  "version": "7.0.0",
+  "dependencies": {
+    "express": "^4.18.2",
+    "compression": "^1.7.4",
+    "node-cache": "^5.1.2",
+    "axios": "^1.4.0",
+    "natural": "^6.0.0",
+    "compromise": "^14.0.0",
+    "persian-tools": "^2.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "supertest": "^6.0.0",
+    "eslint": "^8.0.0"
+  }
+}

@@ -1,55 +1,51 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const app = express();
+app.use(express.json());
 
-console.log('🟡 شروع راه‌اندازی سرور...');
+console.log('🔍 شروع دیباگ سرور...');
 
-const PORT = 3006;
-let requestCount = 0;
+// تست ماژول‌ها
+try {
+    const AdvancedIntentRecognition = require('./src/nlp/advanced-intent-recognition');
+    console.log('✅ ماژول تشخیص هدف بارگذاری شد');
+} catch (e) {
+    console.log('❌ خطا در بارگذاری تشخیص هدف:', e.message);
+}
 
-const server = http.createServer((req, res) => {
-    requestCount++;
-    console.log(`📨 درخواست ${requestCount}: ${req.method} ${req.url}`);
+try {
+    const AdvancedKnowledgeGraph = require('./src/knowledge/advanced-knowledge-graph');
+    console.log('✅ ماژول پایگاه دانش بارگذاری شد');
+} catch (e) {
+    console.log('❌ خطا در بارگذاری پایگاه دانش:', e.message);
+}
+
+// تست مستقیم API
+app.get('/api/debug-chat', (req, res) => {
+    const question = req.query.q || 'تست';
     
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    
-    if (req.url === '/health') {
-        res.end(JSON.stringify({
-            status: 'active',
-            port: PORT,
-            requests: requestCount,
-            time: new Date().toISOString()
-        }));
-    } else if (req.url === '/nlp/posts') {
-        res.end(JSON.stringify([
-            { id: 1, title: 'پست تست ۱', content: 'این یک پست تست است' }
-        ]));
-    } else {
-        res.end(JSON.stringify({ 
-            message: 'سرور فعال است',
-            endpoints: ['/health', '/nlp/posts']
-        }));
+    try {
+        // پاسخ ساده مستقیم
+        const answer = `🧪 **پاسخ دیباگ**: سوال "${question}" دریافت شد
+        
+✅ سیستم در حال کار است
+🔧 حالت: دیباگ مستقیم
+💡 این نشان می‌دهد که سرور فعال است`;
+
+        res.json({
+            success: true,
+            question: question,
+            answer: answer,
+            debug: true
+        });
+    } catch (error) {
+        res.json({
+            success: false,
+            error: error.message,
+            stack: error.stack
+        });
     }
 });
 
-// هندل خطاهای سرور
-server.on('error', (error) => {
-    console.log('❌ خطای سرور:', error.message);
-    if (error.code === 'EADDRINUSE') {
-        console.log('⚠️ پورت ' + PORT + ' در حال استفاده است');
-    }
+app.listen(3001, () => {
+    console.log('🔧 سرور دیباگ در پورت 3001 اجرا شد');
 });
-
-// شروع سرور
-server.listen(PORT, '0.0.0.0', () => {
-    console.log('🎉 =================================');
-    console.log('✅ سرور با موفقیت راه‌اندازی شد!');
-    console.log('📍 پورت: ' + PORT);
-    console.log('🌐 آدرس‌های دسترسی:');
-    console.log('   http://localhost:' + PORT + '/health');
-    console.log('   http://127.0.0.1:' + PORT + '/health');
-    console.log('   http://0.0.0.0:' + PORT + '/health');
-    console.log('🎉 =================================');
-});
-
-console.log('🟢 اسکریپت سرور بارگذاری شد');
