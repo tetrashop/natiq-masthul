@@ -4,15 +4,7 @@
   "description": "سیستم هوش مصنوعی نطق مصطلح - نسخه Cloudflare",
   "main": "src/cloudflare-server.js",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "test": "echo \"✅ سیستم Cloudflare فعال است\""
-  },
-  "dependencies": {
-    "wrangler": "^3.0.0"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.0.0"
+    "deploy": "npx wrangler deploy"
   },
   "keywords": [
     "ai",
