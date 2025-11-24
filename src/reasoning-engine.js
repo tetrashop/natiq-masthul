@@ -6,7 +6,7 @@ export class ReasoningEngine {
     constructor() {
         this.solvedProblems = new Map();
         this.problemPatterns = this.defineProblemPatterns();
-        this.learningThreshold = 0.8; // آستانه اطمینان برای یادگیری
+        this.learningThreshold = 0.8;
     }
 
     defineProblemPatterns() {
@@ -73,7 +73,6 @@ export class ReasoningEngine {
 
     solveMathematicalProblem(question) {
         try {
-            // استخراج اعداد و عملگرها از سوال
             const numbers = question.match(/\d+/g)?.map(Number) || [];
             const operators = question.match(/[+\-×÷*\/]/g) || [];
             
@@ -81,8 +80,7 @@ export class ReasoningEngine {
             let solutionSteps = [];
             let confidence = 0.7;
 
-            // تشخیص نوع عملیات ریاضی
-            if (question.includes('جمع') || question.includes('+')) {
+            if (question.includes('جمع') || question.includes('+') || numbers.length >= 2) {
                 result = numbers.reduce((a, b) => a + b, 0);
                 solutionSteps = numbers.map((num, i) => `عدد ${i+1}: ${num}`);
                 solutionSteps.push(`جمع: ${numbers.join(' + ')} = ${result}`);
@@ -108,6 +106,13 @@ export class ReasoningEngine {
                     confidence = 0.9;
                 }
             }
+            else if (numbers.length >= 2) {
+                // اگر اعداد وجود دارند اما عملگر مشخص نیست، جمع می‌کنیم
+                result = numbers.reduce((a, b) => a + b, 0);
+                solutionSteps = numbers.map((num, i) => `عدد ${i+1}: ${num}`);
+                solutionSteps.push(`جمع خودکار: ${numbers.join(' + ')} = ${result}`);
+                confidence = 0.8;
+            }
 
             return {
                 solvable: result !== null,
@@ -126,7 +131,6 @@ export class ReasoningEngine {
     }
 
     solveLogicalProblem(question) {
-        // تحلیل مسائل منطقی ساده
         const logicalPatterns = {
             'اگر همه انسان‌ها فانی هستند و سقراط انسان است، پس سقراط فانی است': {
                 type: 'قیاس منطقی',
@@ -137,7 +141,7 @@ export class ReasoningEngine {
         };
 
         for (const [pattern, solution] of Object.entries(logicalPatterns)) {
-            if (question.includes(pattern.substring(0, 20))) { // مقایسه بخشی از متن
+            if (question.includes(pattern.substring(0, 20))) {
                 return {
                     solvable: true,
                     result: solution.result,
@@ -156,11 +160,9 @@ export class ReasoningEngine {
     }
 
     solvePatternRecognition(question) {
-        // تشخیص الگوهای ساده عددی
         const numbers = question.match(/\d+/g)?.map(Number) || [];
         
         if (numbers.length >= 3) {
-            // بررسی الگوی جمع
             const sumPattern = this.detectSumPattern(numbers);
             if (sumPattern) {
                 return {
@@ -172,7 +174,6 @@ export class ReasoningEngine {
                 };
             }
 
-            // بررسی الگوی ضرب
             const multiplyPattern = this.detectMultiplyPattern(numbers);
             if (multiplyPattern) {
                 return {
@@ -251,9 +252,7 @@ ${steps.map(step => `• ${step}`).join('\n')}
             usageCount: 1
         });
 
-        // ذخیره در حافظه پایدار (در نسخه کامل می‌تواند در پایگاه داده باشد)
         await this.persistKnowledge(problemId, this.solvedProblems.get(problemId));
-
         return problemId;
     }
 
@@ -263,13 +262,9 @@ ${steps.map(step => `• ${step}`).join('\n')}
     }
 
     async persistKnowledge(problemId, data) {
-        // در این نسخه ساده، در localStorage مرورگر ذخیره می‌شود
-        // در نسخه کامل می‌تواند به سرور ارسال شود
         if (typeof localStorage !== 'undefined') {
             localStorage.setItem(`natiq_knowledge_${problemId}`, JSON.stringify(data));
         }
-        
-        // همچنین در حافظه داخلی سیستم نگهداری می‌شود
         this.solvedProblems.set(problemId, data);
     }
 
@@ -277,7 +272,6 @@ ${steps.map(step => `• ${step}`).join('\n')}
         const problemId = this.generateProblemId(question);
         let storedSolution = null;
 
-        // جستجو در حافظه محلی
         if (typeof localStorage !== 'undefined') {
             const stored = localStorage.getItem(`natiq_knowledge_${problemId}`);
             if (stored) {
@@ -285,7 +279,6 @@ ${steps.map(step => `• ${step}`).join('\n')}
             }
         }
 
-        // جستجو در حافظه فعال
         if (!storedSolution && this.solvedProblems.has(problemId)) {
             storedSolution = this.solvedProblems.get(problemId);
         }
