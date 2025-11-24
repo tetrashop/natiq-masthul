@@ -1,11 +1,11 @@
 {
   "name": "natiq-masthul",
-  "version": "3.0.0",
+  "version": "3.2.0",
   "description": "سیستم هوش مصنوعی نطق مصطلح - نسخه درآمدزا",
-  "main": "src/professional-server.js",
+  "main": "src/comprehensive-server.js",
   "scripts": {
-    "start": "node src/professional-server.js",
-    "dev": "node src/simple-server.js",
+    "start": "node src/comprehensive-server.js",
+    "dev": "node src/comprehensive-server.js",
     "test": "echo \"✅ سیستم فعال است\" && curl -s http://localhost:3001/health"
   },
   "dependencies": {
@@ -19,5 +19,8 @@
     "natiq-masthul"
   ],
   "author": "Ramin Ejlal",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
 }

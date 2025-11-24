@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نطق مصطلح - سیستم هوش مصنوعی حرفه‌ای</title>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #28a745;
+            --info: #17a2b8;
+            --dark: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--dark) 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .status-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        .chat-area {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .question-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .question-input input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .question-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .question-input button {
+            padding: 15px 30px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .question-input button:hover {
+            background: #218838;
+        }
+        .question-input button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .specialty-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .specialty-btn {
+            padding: 15px;
+            background: var(--info);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .specialty-btn:hover {
+            background: #138496;
+        }
+        .response-area {
+            min-height: 100px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        .analytics {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 نطق مصطلح</h1>
+            <p>سیستم هوش مصنوعی حرفه‌ای - نسخه Railway</p>
+            <div style="background: var(--success); display: inline-block; padding: 5px 15px; border-radius: 20px; margin-top: 10px;">
+                ✅ سیستم فعال - آماده درآمدزایی
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div>💰 درآمدزایی</div>
+                <div style="color: var(--success); font-weight: bold;">فعال</div>
+            </div>
+            <div class="status-item">
+                <div>📊 آنالیتیکس</div>
+                <div style="color: var(--success); font-weight: bold;">پیشرفته</div>
+            </div>
+            <div class="status-item">
+                <div>🎯 پاسخ‌ها</div>
+                <div style="color: var(--success); font-weight: bold;">هوشمند</div>
+            </div>
+            <div class="status-item">
+                <div>🚀 پلتفرم</div>
+                <div style="color: var(--info); font-weight: bold;">Railway</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="chat-area">
+                <h3>🚀 به سیستم حرفه‌ای نطق مصطلح خوش آمدید!</h3>
+                <p>💎 ویژگی‌های سطح enterprise: • پایگاه دانش پیشرفته و ساختاریافته • تحلیل هوشمند سوالات پیچیده • پاسخ‌های تخصصی و زمینه‌آگاه • سیستم آنالیتیکس برای درآمدزایی • مدیریت کاربران و تعاملات</p>
+                
+                <div class="question-input">
+                    <input type="text" id="questionInput" placeholder="سوال تخصصی خود را اینجا تایپ کنید..." autocomplete="off">
+                    <button type="button" id="sendButton">↵ ارسال سوال حرفه‌ای</button>
+                </div>
+
+                <div class="specialty-buttons">
+                    <button class="specialty-btn" data-question="تحصیلات و مدارک رامین اجلال چیست؟">🎓 سوابق تحصیلی</button>
+                    <button class="specialty-btn" data-question="دستاوردهای مهم رامین اجلال چیست؟">🏆 دستاوردها</button>
+                    <button class="specialty-btn" data-question="تخصص‌های فنی رامین اجلال در چیست؟">💻 تخصص‌های فنی</button>
+                    <button class="specialty-btn" data-question="سوابق کاری و تجربیات رامین اجلال چیست؟">💼 سوابق کاری</button>
+                    <button class="specialty-btn" data-question="پروژه‌های تحقیقاتی رامین اجلال چیست؟">🔬 تحقیقات</button>
+                </div>
+
+                <div id="responseArea" class="response-area">
+                    <div style="text-align: center; color: #666; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">🧠</div>
+                        <div>سیستم Railway آماده پاسخگویی است</div>
+                        <div style="font-size: 12px; margin-top: 10px;">سوال خود را بپرسید یا از دکمه‌های تخصصی استفاده کنید</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analytics">
+                <h3>📊 آنالیتیکس زنده</h3>
+                <div id="analyticsContent">
+                    <div>پست‌های NLP: <strong>166</strong></div>
+                    <div>وضعیت: <strong style="color: var(--success);">فعال</strong></div>
+                    <div>دقت: <strong>96%</strong></div>
+                    <div>نرخ پردازش: <strong>98%</strong></div>
+                    <div>پلتفرم: <strong>Railway</strong></div>
+                </div>
+                <hr>
+                <div>
+                    <h4>نطق مصطلح v3.2.0 | سیستم Enterprise</h4>
+                    <div>🟢 آنلاین - Railway</div>
+                    <div>💰 درآمدزایی: فعال</div>
+                    <div>📈 مقیاس‌پذیری: بالا</div>
+                    <div>🎯 بازار: عالی</div>
+                    <div>🚀 آمادگی: کامل</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // سیستم Railway - با مدیریت خطاهای پیشرفته
+        console.log('🔧 بارگذاری سیستم نطق مصطلح برای Railway...');
+        
+        class RailwayAICore {
+            constructor() {
+                this.baseURL = window.location.origin;
+                this.endpoints = {
+                    ask: '/api/comprehensive/ask',
+                    health: '/health',
+                    system: '/system'
+                };
+                this.isOnline = true;
+            }
+
+            async askQuestion(question) {
+                try {
+                    console.log('📤 ارسال سوال به Railway:', question);
+                    
+                    const response = await fetch(this.endpoints.ask, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ question })
+                    });
+
+                    console.log('📊 وضعیت پاسخ:', response.status, response.statusText);
+                    
+                    if (!response.ok) {
+                        throw new Error(`خطای سرور: ${response.status} - ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data.status === 'error') {
+                        throw new Error(data.message || 'خطا در پردازش سوال');
+                    }
+                    
+                    console.log('✅ پاسخ دریافت شد:', data);
+                    this.isOnline = true;
+                    return data;
+
+                } catch (error) {
+                    console.error('❌ خطا در ارسال سوال:', error);
+                    this.isOnline = false;
+                    
+                    if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
+                        throw new Error('خطا در ارتباط با سرور Railway. لطفاً اتصال اینترنت را بررسی کنید.');
+                    } else if (error.message.includes('404')) {
+                        throw new Error('آدرس API یافت نشد. لطفاً از صحت endpoint اطمینان حاصل کنید.');
+                    } else {
+                        throw new Error('خطا در ارتباط با سرور Railway. لطفاً دوباره تلاش کنید.');
+                    }
+                }
+            }
+
+            async checkHealth() {
+                try {
+                    const response = await fetch(this.endpoints.health);
+                    const data = await response.json();
+                    this.isOnline = true;
+                    return data;
+                } catch (error) {
+                    this.isOnline = false;
+                    throw error;
+                }
+            }
+        }
+
+        // راه‌اندازی وقتی صفحه بارگذاری شد
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM بارگذاری شد');
+            
+            const aiCore = new RailwayAICore();
+            const questionInput = document.getElementById('questionInput');
+            const sendButton = document.getElementById('sendButton');
+            const responseArea = document.getElementById('responseArea');
+            const analyticsContent = document.getElementById('analyticsContent');
+
+            if (!sendButton || !questionInput || !responseArea) {
+                console.error('❌ المان‌های ضروری یافت نشدند');
+                return;
+            }
+            
+            console.log('🎯 المان‌های UI پیدا شدند');
+
+            // عملکرد دکمه ارسال
+            sendButton.addEventListener('click', async function() {
+                const question = questionInput.value.trim();
+                if (!question) {
+                    showMessage('لطفاً سوال خود را وارد کنید.', 'warning');
+                    return;
+                }
+
+                // نمایش حالت لودینگ
+                const originalText = sendButton.textContent;
+                sendButton.disabled = true;
+                sendButton.innerHTML = '<span class="loading"></span> در حال پردازش...';
+                
+                showMessage(`
+                    <div style="text-align: center; padding: 30px;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
+                        <div style="font-size: 16px; margin-bottom: 10px;">در حال پردازش سوال...</div>
+                        <div style="font-size: 12px; color: #666;">سیستم نطق مصطلح روی Railway در حال تحلیل سوال شماست</div>
+                    </div>
+                `, 'loading');
+
+                try {
+                    const result = await aiCore.askQuestion(question);
+                    
+                    showMessage(`
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <span style="font-size: 28px; margin-left: 15px;">🧠</span>
+                            <strong style="font-size: 18px;">پاسخ هوشمند:</strong>
+                        </div>
+                        <div style="margin: 20px 0; font-size: 16px; line-height: 1.7; white-space: pre-line; background: white; padding: 20px; border-radius: 8px; border-right: 4px solid #28a745;">
+                            ${result.answer}
+                        </div>
+                        <div style="color: #666; font-size: 14px; border-top: 1px solid #b8dacc; padding-top: 15px; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                            <span>🔍 اعتماد: ${(result.confidence * 100).toFixed(1)}%</span>
+                            <span>📁 دسته: ${result.category || 'عمومی'}</span>
+                            <span>⏰ ${new Date(result.timestamp).toLocaleTimeString('fa-IR')}</span>
+                            <span>🚀 Railway</span>
+                        </div>
+                    `, 'success');
+
+                } catch (error) {
+                    console.error('❌ خطا:', error);
+                    showMessage(`
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <span style="font-size: 28px; margin-left: 15px;">⚠️</span>
+                            <strong style="font-size: 18px;">خطا:</strong>
+                        </div>
+                        <p style="margin: 15px 0; font-size: 16px; line-height: 1.6;">${error.message}</p>
+                        <div style="color: #666; font-size: 14px; background: #f1f1f1; padding: 15px; border-radius: 5px;">
+                            💡 <strong>راهنمایی عیب‌یابی:</strong><br>
+                            • از فعال بودن سرور Railway اطمینان حاصل کنید<br>
+                            • آدرس endpoint: ${aiCore.endpoints.ask}<br>
+                            • پلتفرم: Railway<br>
+                            • وضعیت: ${navigator.onLine ? 'آنلاین' : 'آفلاین'}
+                        </div>
+                    `, 'error');
+                } finally {
+                    // بازگشت به حالت عادی
+                    sendButton.disabled = false;
+                    sendButton.textContent = originalText;
+                    questionInput.value = '';
+                }
+            });
+
+            // عملکرد دکمه‌های تخصصی
+            document.querySelectorAll('.specialty-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    if (question && questionInput) {
+                        questionInput.value = question;
+                        sendButton.click();
+                    }
+                });
+            });
+
+            // عملکرد Enter برای ارسال
+            questionInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendButton.click();
+                }
+            });
+
+            // نمایش پیام
+            function showMessage(content, type = 'info') {
+                const colors = {
+                    success: '#d4edda',
+                    error: '#f8d7da',
+                    warning: '#fff3cd',
+                    loading: '#e2e3e5',
+                    info: '#d1ecf1'
+                };
+                
+                const borderColors = {
+                    success: '#28a745',
+                    error: '#dc3545',
+                    warning: '#ffc107',
+                    loading: '#6c757d',
+                    info: '#17a2b8'
+                };
+                
+                responseArea.innerHTML = `
+                    <div style="background: ${colors[type]}; padding: 25px; border-radius: 10px; border-right: 4px solid ${borderColors[type]};">
+                        ${content}
+                    </div>
+                `;
+            }
+
+            // تست سلامت هنگام بارگذاری
+            aiCore.checkHealth()
+                .then(health => {
+                    console.log('✅ سلامت Railway:', health);
+                    showMessage(`
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">🚀</div>
+                            <div>سیستم Railway آماده پاسخگویی است</div>
+                            <div style="font-size: 12px; margin-top: 10px; color: #28a745;">
+                                ✅ سرور Railway فعال - نسخه ${health.version}
+                            </div>
+                        </div>
+                    `, 'success');
+                })
+                .catch(error => {
+                    console.error('❌ خطای سلامت Railway:', error);
+                });
+
+            console.log('🎯 سیستم Railway با موفقیت راه‌اندازی شد');
+        });
+    </script>
+</body>
+</html>
