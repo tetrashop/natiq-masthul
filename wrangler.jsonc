@@ -2,13 +2,10 @@
   "name": "natiq-masthul",
   "compatibility_date": "2025-01-15",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "src/optimized-server.js",
-  "observability": {
-    "enabled": true
-  },
+  "main": "src/self-aware-server.js",
   "vars": {
     "NODE_ENV": "production",
-    "VERSION": "3.2.0",
-    "SYSTEM_TYPE": "enterprise"
+    "VERSION": "4.1.0-self-aware",
+    "SYSTEM_TYPE": "self-aware-ai"
   }
 }

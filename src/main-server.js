@@ -1,336 +1,279 @@
-const express = require('express');
-const path = require('path');
+import SelfAwareAISystem from './knowledge-boundary.js';
 
-const app = express();
+export default {
+    async fetch(request, env, ctx) {
+        const url = new URL(request.url);
+        const pathname = url.pathname;
 
-// Middleware
-app.use(express.json());
-app.use(express.static('.'));
-
-// Import advanced engines
-let AdvancedIntentRecognition, AdvancedKnowledgeGraph;
-
-try {
-    AdvancedIntentRecognition = require('./nlp/advanced-intent-recognition');
-    AdvancedKnowledgeGraph = require('./knowledge/advanced-knowledge-graph');
-    console.log('✅ موتورهای پیشرفته بارگذاری شدند');
-} catch (error) {
-    console.log('⚠️ برخی موتورها بارگذاری نشدند، از حالت ساده استفاده می‌شود:', error.message);
-}
-
-// Initialize engines
-const intentRecognizer = AdvancedIntentRecognition ? new AdvancedIntentRecognition() : null;
-const knowledgeGraph = AdvancedKnowledgeGraph ? new AdvancedKnowledgeGraph() : null;
-
-// Routes
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../index.html'));
-});
-
-app.get('/ai-interface.html', (req, res) => {
-    res.sendFile(path.join(__dirname, '../ai-interface.html'));
-});
-
-// تابع تشخیص هدف پیشرفته (Fallback)
-function detectIntentFallback(question) {
-    const lowerQuestion = question.toLowerCase();
-    const normalized = lowerQuestion
-        .replace(/[؟?]/g, '')
-        .replace(/[\s]+/g, ' ')
-        .trim();
-
-    const entities = {
-        persons: [],
-        skills: [],
-        topics: []
-    };
-
-    // تشخیص افراد
-    if (normalized.includes('رامین') || normalized.includes('اجلال')) {
-        entities.persons.push('رامین اجلال');
-    }
-
-    // تشخیص هدف
-    if (normalized.includes('کیست') || normalized.includes('چه کسی') || normalized.includes('معرفی')) {
-        return {
-            intent: 'person_introduction',
-            entities: entities,
-            confidence: 0.9,
-            normalized: normalized
+        const corsHeaders = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
         };
-    }
 
-    if (normalized.includes('دستاورد') || normalized.includes('پروژه') || normalized.includes('کار')) {
-        return {
-            intent: 'person_achievements',
-            entities: entities,
-            confidence: 0.85,
-            normalized: normalized
-        };
-    }
+        if (request.method === 'OPTIONS') {
+            return new Response(null, { headers: corsHeaders });
+        }
 
-    if (normalized.includes('تخصص') || normalized.includes('مهارت') || normalized.includes('توانایی')) {
-        return {
-            intent: 'person_skills',
-            entities: entities,
-            confidence: 0.8,
-            normalized: normalized
-        };
-    }
+        // Route سلامت
+        if (pathname === '/health' || pathname === '/api/health') {
+            const healthData = {
+                status: 'success',
+                message: 'سیستم خودآگاه نطق مصطلح فعال است',
+                version: '4.1.0-self-aware',
+                features: [
+                    'تشخیص مرزهای دانش',
+                    'خودآگاهی در پاسخ‌دهی',
+                    'رد هوشمند سوالات نامرتبط',
+                    'تحلیل کیفیت سوالات'
+                ],
+                timestamp: new Date().toISOString()
+            };
+            return Response.json(healthData, { headers: corsHeaders });
+        }
 
-    if (normalized.includes('مقاله') || normalized.includes('نوشتن') || normalized.includes('تولید محتوا')) {
-        return {
-            intent: 'article_generation',
-            entities: entities,
-            confidence: 0.75,
-            normalized: normalized
-        };
-    }
+        // Route اصلی با خودآگاهی
+        if (pathname === '/api/ask' || pathname === '/api/aware/ask') {
+            if (request.method === 'POST') {
+                try {
+                    const { question } = await request.json();
+                    
+                    if (!question || question.trim().length < 2) {
+                        return Response.json(
+                            {
+                                status: 'error',
+                                message: 'سوال بسیار کوتاه است',
+                                suggestion: 'لطفاً سوال کامل‌تری مطرح کنید'
+                            },
+                            { status: 400, headers: corsHeaders }
+                        );
+                    }
 
-    return {
-        intent: 'general_inquiry',
-        entities: entities,
-        confidence: 0.6,
-        normalized: normalized
-    };
-}
+                    const aiSystem = new SelfAwareAISystem();
+                    const response = await aiSystem.processQuestion(question);
 
-// تابع تولید پاسخ پیشرفته
-function generateEnhancedResponse(analysis, originalQuestion) {
-    const { intent, entities, confidence, normalized } = analysis;
-    
-    console.log('🔍 تحلیل سوال:', { intent, entities, normalized });
+                    return Response.json({
+                        ...response,
+                        timestamp: new Date().toISOString(),
+                        version: '4.1.0-self-aware'
+                    }, { headers: corsHeaders });
 
-    // پاسخ‌های تخصصی برای رامین اجلال
-    if (intent === 'person_introduction' || 
-        entities.persons?.includes('رامین اجلال') ||
-        normalized.includes('رامین') && (normalized.includes('کیست') || normalized.includes('چه کسی'))) {
-        
-        return `👤 **رامین اجلال - توسعه‌دهنده و محقق هوش مصنوعی**
-
-🎯 **تخصص‌های اصلی:**
-• پردازش زبان فارسی و هوش مصنوعی
-• توسعه سیستم‌های توزیع‌شده و مقیاس‌پذیر
-• یادگیری ماشین و داده‌کاوی
-• معماری نرم‌افزارهای پیشرفته
-
-🏢 **زمینه فعالیت:**
-- تحقیق و توسعه در حوزه پردازش زبان طبیعی فارسی
-- طراحی سیستم‌های هوش مصنوعی سازمانی
-- توسعه پلتفرم‌های دانش محور
-
-💡 *برای اطلاعات بیشتر در مورد دستاوردها یا تخصص‌های خاص، سوال دقیق‌تری بپرسید.*`;
-    }
-    
-    if (intent === 'person_achievements' || 
-        (entities.persons && normalized.includes('دستاورد')) ||
-        normalized.includes('دستاورد') && normalized.includes('رامین')) {
-        
-        return `🏆 **دستاوردهای رامین اجلال:**
-
-1. **توسعه سیستم نطق مصطلح** - پلتفرم هوشمند پردازش دانش و درک زبان فارسی
-2. **تحقیق در پردازش زبان طبیعی فارسی** - توسعه الگوریتم‌های ویژه زبان فارسی
-3. **طراحی معماری‌های مقیاس‌پذیر** - برای سیستم‌های هوش مصنوعی سازمانی
-4. **همکاری در پروژه‌های متن‌باز** - مرتبط با هوش مصنوعی فارسی
-
-🚀 **پروژه‌های در دست اجرا:**
-• گسترش قابلیت‌های سیستم نطق مصطلح
-• بهبود الگوریتم‌های درک مطلب فارسی
-• توسعه معماری‌های پیشرفته برای پردازش بلادرنگ`;
-    }
-    
-    if (intent === 'person_skills' || 
-        normalized.includes('تخصص') || normalized.includes('مهارت')) {
-        
-        return `🎯 **مهارت‌ها و تخصص‌های رامین اجلال:**
-
-💻 **زبان‌ها و تکنولوژی‌ها:**
-JavaScript/Node.js, Python, TensorFlow, PyTorch, React, Docker, Kubernetes
-
-🧠 **هوش مصنوعی و ML:**
-• پردازش زبان طبیعی (NLP)
-• یادگیری عمیق و شبکه‌های عصبی
-• بینایی کامپیوتر
-• سیستم‌های توصیه‌گر
-
-⚙️ **مهندسی نرم‌افزار:**
-• معماری میکروسرویس
-• سیستم‌های توزیع‌شده
-• پایگاه داده‌های NoSQL و SQL
-• DevOps و CI/CD
-
-🔬 **حوزه‌های تحقیقاتی:**
-پردازش زبان فارسی، هوش مصنوعی تفسیرپذیر، سیستم‌های استدلال خودکار، یادگیری نیمه‌نظارتی`;
-    }
-    
-    if (normalized.includes('مقاله') || normalized.includes('نوشتن')) {
-        return `📝 **سیستم تولید مقاله هوشمند**
-
-✅ **این قابلیت فعال است!** می‌توانم در تولید محتوای تخصصی کمک کنم.
-
-🎯 **موضوعات قابل پوشش:**
-• هوش مصنوعی و یادگیری ماشین
-• پردازش زبان فارسی
-• توسعه نرم‌افزار و معماری
-• فناوری‌های نوین
-
-💡 **برای تولید مقاله:**
-"مقاله‌ای در مورد [موضوع مورد نظر] بنویس"
-یا از دکمه «مقاله» استفاده کنید.`;
-    }
-    
-    if (normalized.includes('همسر') || normalized.includes('خانواده') || normalized.includes('زندگی شخصی')) {
-        return `🔒 **احترام به حریم شخصی**
-
-من اطلاعات شخصی مانند وضعیت تأهل، اطلاعات خانوادگی یا جزئیات زندگی شخصی افراد را ذخیره یا ارائه نمی‌دهم.
-
-💡 **من می‌توانم در این زمینه‌ها کمک کنم:**
-• اطلاعات حرفه‌ای و تخصصی
-• دستاوردها و پروژه‌ها
-• مهارت‌ها و زمینه‌های تحقیقاتی
-• دانش فنی و تخصصی
-
-لطفاً سوال خود را در این حوزه‌ها مطرح کنید.`;
-    }
-    
-    // پاسخ عمومی بهبود یافته
-    return `🤔 **سوال شما:** "${originalQuestion}"
-
-🧠 **سیستم نطق مصطلح** می‌تواند در مورد این موضوعات کمک کند:
-
-👤 **معرفی رامین اجلال** - اطلاعات تخصصی و حرفه‌ای
-🏆 **دستاوردها و پروژه‌ها** - جزئیات کامل
-🎯 **مهارت‌ها و تخصص‌ها** - اطلاعات فنی
-📝 **تولید مقاله** - محتوای تخصصی
-
-💡 *برای پاسخ دقیق‌تر، لطفاً سوال خود را واضح‌تر بیان کنید یا از دکمه‌های سریع استفاده کنید.*`;
-}
-
-// تابع تولید پاسخ ساده (Fallback)
-function generateSimpleResponse(question) {
-    const lowerQuestion = question.toLowerCase();
-    
-    if (lowerQuestion.includes('رامین') && (lowerQuestion.includes('کیست') || lowerQuestion.includes('چه کسی'))) {
-        return `👤 **رامین اجلال** - توسعه‌دهنده و محقق هوش مصنوعی
-تخصص اصلی در پردازش زبان فارسی و توسعه سیستم‌های هوش مصنوعی
-
-🎯 زمینه‌های فعالیت:
-• پردازش زبان طبیعی فارسی
-• هوش مصنوعی و یادگیری ماشین  
-• توسعه سیستم‌های توزیع‌شده
-• معماری نرم‌افزارهای مقیاس‌پذیر`;
-    }
-    
-    if (lowerQuestion.includes('دستاورد') || lowerQuestion.includes('پروژه')) {
-        return `🏆 **دستاوردهای اصلی:**
-• توسعه سیستم نطق مصطلح
-• تحقیق در پردازش زبان فارسی
-• توسعه معماری‌های مقیاس‌پذیر
-• همکاری در پروژه‌های متن‌باز هوش مصنوعی`;
-    }
-    
-    if (lowerQuestion.includes('تخصص') || lowerQuestion.includes('مهارت')) {
-        return `🎯 **تخصص‌ها و مهارت‌ها:**
-پردازش زبان فارسی، هوش مصنوعی، یادگیری ماشین، 
-توسعه نرم‌افزار، معماری سیستم‌های توزیع‌شده، Python, JavaScript, TensorFlow`;
-    }
-    
-    if (lowerQuestion.includes('مقاله')) {
-        return `📝 سیستم تولید مقاله فعال است. می‌توانم در تولید محتوای تخصصی کمک کنم.`;
-    }
-    
-    return `🤔 سوال شما دریافت شد. سیستم نطق مصطلح می‌تواند در مورد رامین اجلال و حوزه‌های تخصصی کمک کند.`;
-}
-
-// Enhanced API
-app.get('/api/chat', async (req, res) => {
-    const question = req.query.q;
-    const userId = req.query.userId || 'default';
-    
-    if (!question) {
-        return res.json({
-            error: 'لطفا سوال خود را وارد کنید',
-            question: null,
-            answer: null
-        });
-    }
-    
-    try {
-        let answer;
-        let analysis = {};
-        
-        // استفاده از موتور پیشرفته اگر موجود باشد
-        if (intentRecognizer) {
-            try {
-                analysis = intentRecognizer.detectIntent(question);
-                console.log('🔍 تحلیل پیشرفته:', analysis);
-            } catch (error) {
-                console.log('⚠️ خطا در تحلیل پیشرفته، استفاده از حالت ساده:', error.message);
-                analysis = detectIntentFallback(question);
+                } catch (error) {
+                    return Response.json(
+                        {
+                            status: 'error',
+                            message: 'خطا در پردازش سوال',
+                            error: error.message
+                        },
+                        { status: 500, headers: corsHeaders }
+                    );
+                }
             }
-        } else {
-            // حالت ساده
-            analysis = detectIntentFallback(question);
         }
-        
-        // تولید پاسخ
-        if (intentRecognizer) {
-            answer = generateEnhancedResponse(analysis, question);
-        } else {
-            answer = generateSimpleResponse(question);
+
+        // Route اصلی
+        if (pathname === '/' || pathname === '/aware.html') {
+            const html = this.generateSelfAwareInterface();
+            return new Response(html, {
+                headers: {
+                    'Content-Type': 'text/html; charset=utf-8',
+                    ...corsHeaders
+                }
+            });
         }
+
+        return Response.json(
+            { status: 'error', message: 'مسیر یافت نشد' },
+            { status: 404, headers: corsHeaders }
+        );
+    },
+
+    generateSelfAwareInterface() {
+        return `<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نطق مصطلح - نسخه خودآگاه</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .question-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .question-input input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        .question-input button {
+            padding: 15px 25px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .response-area {
+            min-height: 200px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        .awareness-badge {
+            background: #17a2b8;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 نطق مصطلح - نسخه خودآگاه</h1>
+            <p>سیستمی که مرزهای دانش خود را می‌شناسد</p>
+            <div class="awareness-badge">
+                ✅ سیستم خودآگاه - می‌دانم چه نمی‌دانم
+            </div>
+        </div>
         
-        res.json({
-            success: true,
-            question: question,
-            answer: answer,
-            analysis: analysis,
-            timestamp: new Date().toISOString()
+        <div class="content">
+            <div class="question-input">
+                <input type="text" id="questionInput" 
+                       placeholder="سوال خود را اینجا بپرسید... (من فقط در مورد رامین اجلال و خودم اطلاعات دارم)"
+                       autocomplete="off">
+                <button type="button" id="sendButton">↵ ارسال سوال</button>
+            </div>
+            
+            <div id="responseArea" class="response-area">
+                <div style="text-align: center; color: #666; padding: 40px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">🔍</div>
+                    <div>سیستم خودآگاه آماده پاسخگویی است</div>
+                    <div style="font-size: 12px; margin-top: 10px;">
+                        من صادقانه می‌دانم چه می‌دانم و چه نمی‌دانم
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class SelfAwareClient {
+            constructor() {
+                this.endpoint = '/api/aware/ask';
+            }
+
+            async askQuestion(question) {
+                const response = await fetch(this.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question })
+                });
+                return await response.json();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const client = new SelfAwareClient();
+            const questionInput = document.getElementById('questionInput');
+            const sendButton = document.getElementById('sendButton');
+            const responseArea = document.getElementById('responseArea');
+
+            sendButton.addEventListener('click', async function() {
+                const question = questionInput.value.trim();
+                if (!question) return;
+
+                sendButton.disabled = true;
+                sendButton.textContent = 'در حال تحلیل...';
+                
+                responseArea.innerHTML = '<div style="text-align: center; padding: 30px;">در حال بررسی سوال و مرزهای دانش...</div>';
+
+                try {
+                    const result = await client.askQuestion(question);
+                    
+                    let html = '';
+                    if (result.status === 'out_of_scope') {
+                        html = \`
+                            <div style="background: #fff3cd; padding: 25px; border-radius: 10px; border-right: 4px solid #ffc107;">
+                                <div style="font-size: 24px; margin-bottom: 15px;">🤔</div>
+                                \${result.answer.replace(/\\n/g, '<br>')}
+                                \${result.suggestion ? \`<div style="margin-top: 15px; padding: 10px; background: #e2e3e5; border-radius: 5px;"><small>\${result.suggestion}</small></div>\` : ''}
+                            </div>
+                        \`;
+                    } else if (result.status === 'error') {
+                        html = \`
+                            <div style="background: #f8d7da; padding: 25px; border-radius: 10px; border-right: 4px solid #dc3545;">
+                                <div style="font-size: 24px; margin-bottom: 15px;">❌</div>
+                                \${result.answer}
+                            </div>
+                        \`;
+                    } else {
+                        html = \`
+                            <div style="background: #d4edda; padding: 25px; border-radius: 10px; border-right: 4px solid #28a745;">
+                                <div style="font-size: 24px; margin-bottom: 15px;">✅</div>
+                                \${result.answer.replace(/\\n/g, '<br>')}
+                            </div>
+                        \`;
+                    }
+                    
+                    responseArea.innerHTML = html;
+                    
+                } catch (error) {
+                    responseArea.innerHTML = \`
+                        <div style="background: #f8d7da; padding: 25px; border-radius: 10px;">
+                            خطا در ارتباط با سرور
+                        </div>
+                    \`;
+                } finally {
+                    sendButton.disabled = false;
+                    sendButton.textContent = '↵ ارسال سوال';
+                    questionInput.value = '';
+                }
+            });
+
+            questionInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendButton.click();
+                }
+            });
         });
-        
-    } catch (error) {
-        console.error('Error processing question:', error);
-        res.json({
-            success: false,
-            question: question,
-            answer: '⚠️ خطا در پردازش سوال. لطفاً دوباره تلاش کنید.',
-            timestamp: new Date().toISOString()
-        });
+    </script>
+</body>
+</html>`;
     }
-});
-
-// API وضعیت سیستم
-app.get('/api/status', (req, res) => {
-    res.json({
-        status: 'active',
-        system: 'نطق مصطلح - سیستم پیشرفته',
-        version: '7.0.1',
-        timestamp: new Date().toISOString(),
-        engines: {
-            intent_recognition: intentRecognizer ? 'فعال' : 'غیرفعال',
-            knowledge_graph: knowledgeGraph ? 'فعال' : 'غیرفعال'
-        },
-        capabilities: [
-            'پردازش زبان طبیعی فارسی',
-            'تشخیص هدف سوالات',
-            'پاسخ‌های ساختاریافته',
-            'مدیریت دانش تخصصی',
-            'تولید محتوای هوشمند'
-        ]
-    });
-});
-
-// Health check
-app.get('/health', (req, res) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🧠 نطق مصطلح پیشرفته در پورت ${PORT} اجرا شد`);
-    console.log(`🔗 دسترسی: http://localhost:${PORT}`);
-    console.log(`🤖 رابط هوش مصنوعی: http://localhost:${PORT}/ai-interface.html`);
-    console.log(`📊 وضعیت سیستم: http://localhost:${PORT}/api/status`);
-});
-
-module.exports = app;
+};
