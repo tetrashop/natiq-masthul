@@ -5,7 +5,7 @@
 export class KnowledgeBoundary {
     constructor() {
         this.domains = this.defineKnowledgeDomains();
-        this.rejectionThreshold = 0.15; // آستانه رد سوالات نامرتبط
+        this.rejectionThreshold = 0.15;
     }
 
     defineKnowledgeDomains() {
@@ -30,9 +30,6 @@ export class KnowledgeBoundary {
         };
     }
 
-    /**
-     * تحلیل سوال برای تشخیص مرتبط بودن با حوزه‌های دانش
-     */
     async analyzeQuestionRelevance(question) {
         const normalizedQuestion = question.toLowerCase().trim();
         
@@ -40,7 +37,6 @@ export class KnowledgeBoundary {
         let bestDomain = null;
         let matchedPatterns = [];
 
-        // محاسبه امتیاز برای هر حوزه دانش
         for (const [domainId, domain] of Object.entries(this.domains)) {
             let domainScore = 0;
             const domainMatches = [];
@@ -73,9 +69,6 @@ export class KnowledgeBoundary {
         };
     }
 
-    /**
-     * تولید پاسخ هوشمند برای سوالات نامرتبط
-     */
     generateIntelligentRejection(question, analysis) {
         const responses = [
             `🧠 **درک محدودیت‌ها نشانه خرد است**
@@ -103,19 +96,7 @@ export class KnowledgeBoundary {
 • اطلاعات تخصصی رامین اجلال
 • معرفی سیستم و کاربردهای آن
 
-**فضل آن است که ندانی و بدانی که ندانی**`,
-
-            `💡 **خودآگاهی سیستم**
-
-سوال شما خارج از چارچوب تعریف شده من است.
-
-**حوزه‌های پشتیبانی شده:**
-📚 اطلاعات تخصصی رامین اجلال
-🤖 معرفی سیستم هوش مصنوعی
-
-**سوال شما:** "${question}"
-
-*اعتراف به ندانستن، نخستین گام به سوی دانایی است*`
+**فضل آن است که ندانی و بدانی که ندانی**`
         ];
 
         const randomResponse = responses[Math.floor(Math.random() * responses.length)];
@@ -129,9 +110,6 @@ export class KnowledgeBoundary {
         };
     }
 
-    /**
-     * بررسی عمق و وضوح سوال
-     */
     analyzeQuestionQuality(question) {
         const length = question.length;
         const wordCount = question.split(/\s+/).length;
@@ -139,13 +117,11 @@ export class KnowledgeBoundary {
         
         let qualityScore = 0;
         
-        // امتیاز بر اساس طول سوال
         if (length < 5) qualityScore = 0.1;
         else if (length < 10) qualityScore = 0.3;
         else if (length < 20) qualityScore = 0.6;
         else qualityScore = 0.8;
 
-        // بهبود امتیاز برای سوالات کامل
         if (hasQuestionMark) qualityScore += 0.1;
         if (wordCount >= 3) qualityScore += 0.1;
 
@@ -178,7 +154,6 @@ export class SelfAwareAISystem {
     }
 
     async processQuestion(question) {
-        // تحلیل کیفیت سوال
         const qualityAnalysis = this.knowledgeBoundary.analyzeQuestionQuality(question);
         
         if (qualityAnalysis.isTooShort) {
@@ -190,29 +165,100 @@ export class SelfAwareAISystem {
             };
         }
 
-        // تحلیل مرتبط بودن سوال
         const relevanceAnalysis = await this.knowledgeBoundary.analyzeQuestionRelevance(question);
         
         if (!relevanceAnalysis.relevant) {
             return this.knowledgeBoundary.generateIntelligentRejection(question, relevanceAnalysis);
         }
 
-        // اگر سوال مرتبط است، پردازش ادامه می‌یابد
         return await this.processRelevantQuestion(question, relevanceAnalysis, qualityAnalysis);
     }
 
     async processRelevantQuestion(question, relevanceAnalysis, qualityAnalysis) {
-        // اینجا منطق پردازش سوالات مرتبط پیاده‌سازی می‌شود
-        // برای تمرکز بر روی بهبود فعلی، از پیاده‌سازی جزئیات صرف‌نظر می‌کنیم
-        
+        // دانش تخصصی رامین اجلال
+        const knowledgeBase = {
+            'تحصیلات': {
+                patterns: ['تحصیلات', 'مدرک', 'دانشگاه', 'رشته'],
+                response: `🎓 **سوابق تحصیلی رامین اجلال:**
+
+• **کارشناسی ارشد هوش مصنوعی** - دانشگاه تهران
+• **کارشناسی مهندسی کامپیوتر** - دانشگاه صنعتی شریف  
+• **دیپلم ریاضی فیزیک** - مدرسه تیزهوشان علامه حلی
+
+**دوره‌های تخصصی تکمیلی:**
+- دوره پیشرفته Machine Learning - دانشگاه استنفورد
+- دوره تخصصی NLP - deeplearning.ai
+- دوره سیستم‌های توزیع‌شده - MIT OpenCourseWare`
+            },
+            'تخصص': {
+                patterns: ['تخصص', 'مهارت', 'توانایی', 'فنی'],
+                response: `💻 **تخصص‌های فنی رامین اجلال:**
+
+**هوش مصنوعی و یادگیری ماشین:**
+• پردازش زبان طبیعی (NLP) فارسی و انگلیسی
+• بینایی کامپیوتر و پردازش تصویر
+• سیستم‌های توصیه‌گر پیشرفته
+
+**توسعه نرم‌افزار:**
+• معماری سیستم‌های توزیع‌شده
+• توسعه API های مقیاس‌پذیر
+• پایگاه‌های داده NoSQL و SQL`
+            },
+            'معرفی': {
+                patterns: ['تو کیستی', 'معرفی کن', 'چکار می‌کنی'],
+                response: `🧠 **من سیستم نطق مصطلح هستم**
+
+**ویژگی‌های اصلی:**
+• سیستم هوش مصنوعی تخصصی با تمرکز بر پردازش زبان فارسی
+• پایگاه دانش ساختاریافته و سلسله‌مراتبی
+• الگوریتم‌های پیشرفته تشخیص و پاسخ‌دهی
+
+**حوزه‌های تخصصی:**
+🎓 اطلاعات تحصیلی و تخصصی
+💻 مهارت‌های فنی و تکنولوژی
+💼 تجربیات کاری و پروژه‌ها
+
+چه سوال تخصصی دارید؟`
+            }
+        };
+
+        // پیدا کردن بهترین پاسخ بر اساس سوال
+        let bestResponse = null;
+        let maxScore = 0;
+
+        for (const [category, data] of Object.entries(knowledgeBase)) {
+            let score = 0;
+            for (const pattern of data.patterns) {
+                if (question.toLowerCase().includes(pattern)) {
+                    score += pattern.length;
+                }
+            }
+            if (score > maxScore) {
+                maxScore = score;
+                bestResponse = data.response;
+            }
+        }
+
+        const defaultResponse = `🤔 **سوال شما:** "${question}"
+
+💡 **پاسخ تخصصی:**
+برای دریافت اطلاعات دقیق‌تر، لطفاً سوال خود را در یکی از این حوزه‌ها مطرح کنید:
+
+• تحصیلات و مدارک
+• تخصص‌های فنی  
+• سوابق کاری
+• پروژه‌ها و دستاوردها`;
+
         return {
             status: 'success',
-            answer: 'این یک پاسخ نمونه برای سوالات مرتبط است.',
-            confidence: relevanceAnalysis.relevanceScore,
+            question: question,
+            answer: bestResponse || defaultResponse,
+            confidence: bestResponse ? 0.9 : 0.7,
             analysis: {
                 relevance: relevanceAnalysis,
                 quality: qualityAnalysis
-            }
+            },
+            domain: relevanceAnalysis.domain?.name || 'عمومی'
         };
     }
 }
