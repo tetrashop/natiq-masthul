@@ -1,0 +1,11 @@
+{
+  "name": "natiq-masthul-self-aware",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "src/main-server.js",
+  "vars": {
+    "NODE_ENV": "production",
+    "VERSION": "4.1.0-self-aware",
+    "SYSTEM_TYPE": "self-aware-ai"
+  }
+}
