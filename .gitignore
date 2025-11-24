@@ -18,3 +18,25 @@ node_modules/
 logs/
 *.log
 npm-debug.log*
+
+# فایل‌های Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# فایل‌های محیطی
+.env
+.env.local
+.env.production
+
+# فایل‌های Vercel
+.vercel/
+
+# فایل‌های سیستم
+.DS_Store
+Thumbs.db
+
+# فایل‌های لاگ
+*.log
+logs/
