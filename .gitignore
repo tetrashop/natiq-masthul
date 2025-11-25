@@ -1,42 +1,12 @@
-# فایل‌های موقت و دیباگ
-debug-*.js
+# فایل‌های داده محلی
+knowledge-data.json
 *.log
+
+# پوشه‌های سیستمی
+node_modules/
+.DS_Store
 *.tmp
 
-# پوشه‌های آزمایشی (اختیاری - می‌تونید اضافه کنید اگه لازم نیست)
-# src/ai-core/
-# src/architecture/
-# src/simple-test-server.js
-
-# فایل‌های سیستم
-node_modules/
-.DS_Store
+# کلیدهای API
 .env
-*.local
-
-# لاگ‌ها
-logs/
-*.log
-npm-debug.log*
-
-# فایل‌های Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# فایل‌های محیطی
-.env
-.env.local
-.env.production
-
-# فایل‌های Vercel
-.vercel/
-
-# فایل‌های سیستم
-.DS_Store
-Thumbs.db
-
-# فایل‌های لاگ
-*.log
-logs/
+config/keys.json
