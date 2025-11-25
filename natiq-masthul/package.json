@@ -1,0 +1,22 @@
+{
+  "name": "natiq-masthul-integrated",
+  "version": "2.0.0",
+  "description": "سیستم هوش مصنوعی نطق مصطلح با الگوریتم‌های یکپارچه",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "node test-system.js",
+    "dev": "node dev-server.js"
+  },
+  "keywords": [
+    "ai",
+    "reasoning",
+    "knowledge-graph",
+    "persian-nlp"
+  ],
+  "author": "رامین اجلال",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
