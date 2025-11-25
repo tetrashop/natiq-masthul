@@ -1,6 +1,5 @@
 /**
  * موتور جستجو و یادگیری عمیق برای نطق مصطلح
- * قابلیت: جستجوی معنایی، یادگیری عمق و شبکه عصبی
  */
 
 class NeuralSearchEngine {
@@ -13,7 +12,6 @@ class NeuralSearchEngine {
     }
 
     initNeuralNetwork() {
-        // وزن‌های اولیه برای ارتباطات معنایی
         this.neuralWeights.set('algorithm_optimization', {
             'customer_psychology': 0.3,
             'business_strategy': 0.6,
@@ -27,7 +25,6 @@ class NeuralSearchEngine {
         });
     }
 
-    // جستجوی عمقی با درنظرگرفتن ارتباطات معنایی
     async deepSemanticSearch(query, currentDepth = 0, visited = new Set()) {
         if (currentDepth >= this.searchDepth) {
             return [];
@@ -40,15 +37,12 @@ class NeuralSearchEngine {
             if (visited.has(concept)) continue;
             visited.add(concept);
 
-            // جستجوی مستقیم
             const directResults = this.knowledgeCore.deepKnowledgeSearch(concept, 1);
             results.push(...directResults.directMatches);
 
-            // جستجوی ارتباطات وزندار
             const weightedResults = await this.findWeightedAssociations(concept, visited);
             results.push(...weightedResults);
 
-            // جستجوی عمقی بازگشتی
             for (const result of directResults.relatedConcepts) {
                 const deepResults = await this.deepSemanticSearch(
                     result.concept, 
@@ -59,7 +53,6 @@ class NeuralSearchEngine {
             }
         }
 
-        // حذف موارد تکراری و مرتب‌سازی بر اساس ارتباط
         return this.rankAndDeduplicate(results);
     }
 
@@ -112,7 +105,6 @@ class NeuralSearchEngine {
             }
         });
 
-        // مرتب‌سازی بر اساس ارتباط
         return uniqueResults.sort((a, b) => {
             const relevanceA = a.relevance * (a.semanticWeight || 1);
             const relevanceB = b.relevance * (b.semanticWeight || 1);
@@ -120,7 +112,6 @@ class NeuralSearchEngine {
         });
     }
 
-    // به‌روزرسانی وزن‌های شبکه عصبی بر اساس تعاملات موفق
     updateNeuralWeights(successfulInteraction) {
         const { domainsUsed, confidence } = successfulInteraction;
         
@@ -143,7 +134,6 @@ class NeuralSearchEngine {
         });
     }
 
-    // آموزش مدل بر اساس تاریخچه تعاملات
     async trainOnInteractionHistory() {
         const stats = this.knowledgeCore.getLearningStats();
         const learningInteractions = this.knowledgeCore.interactionHistory

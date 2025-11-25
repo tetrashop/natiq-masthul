@@ -1,23 +1,19 @@
 /**
- * یکپارچه‌سازی پایگاه دانش با سرور برای نطق مصطلح
- * قابلیت: ذخیره‌سازی متمرکز، همگام‌سازی و دسترسی از راه دور
+ * یکپارچه‌سازی پایگاه دانش با سرور
  */
 
 class ServerKnowledgeIntegration {
     constructor(localKnowledgeCore, serverEndpoint = null) {
         this.localCore = localKnowledgeCore;
         this.serverEndpoint = serverEndpoint || 'https://your-knowledge-server.com/api';
-        this.syncInterval = 300000; // 5 دقیقه
+        this.syncInterval = 300000;
         this.isOnline = false;
         this.pendingSyncs = [];
     }
 
-    // راه‌اندازی اتصال به سرور
     async initializeServerConnection(apiKey) {
         try {
             console.log('🖥️ در حال اتصال به سرور پایگاه دانش...');
-            
-            // شبیه‌سازی اتصال به سرور
             await this.testConnection();
             
             this.isOnline = true;
@@ -35,16 +31,13 @@ class ServerKnowledgeIntegration {
     }
 
     async testConnection() {
-        // در نسخه واقعی، اینجا یک درخواست واقعی به سرور زده می‌شود
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                // شبیه‌سازی تست اتصال
                 Math.random() > 0.2 ? resolve() : reject(new Error('Connection failed'));
             }, 1000);
         });
     }
 
-    // همگام‌سازی با سرور
     async syncWithServer() {
         if (!this.isOnline) {
             this.pendingSyncs.push({
@@ -59,10 +52,7 @@ class ServerKnowledgeIntegration {
             
             if (changes.domains.length > 0 || changes.interactions.length > 0) {
                 console.log(`🔄 همگام‌سازی ${changes.domains.length} حوزه و ${changes.interactions.length} تعامل...`);
-                
-                // شبیه‌سازی ارسال به سرور
                 await this.sendToServer(changes);
-                
                 console.log('✅ همگام‌سازی با سرور کامل شد');
                 this.clearLocalChanges();
                 return true;
@@ -77,8 +67,7 @@ class ServerKnowledgeIntegration {
 
     getLocalChanges() {
         const stats = this.localCore.getLearningStats();
-        const recentInteractions = this.localCore.interactionHistory
-            .slice(-100); // آخرین 100 تعامل
+        const recentInteractions = this.localCore.interactionHistory.slice(-100);
 
         return {
             domains: Array.from(this.localCore.domains.entries()),
@@ -89,10 +78,9 @@ class ServerKnowledgeIntegration {
     }
 
     async sendToServer(data) {
-        // شبیه‌سازی ارسال داده به سرور
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                if (Math.random() > 0.1) { // 90% شانس موفقیت
+                if (Math.random() > 0.1) {
                     resolve({ status: 'success', received: data.domains.length });
                 } else {
                     reject(new Error('Server error'));
@@ -110,19 +98,15 @@ class ServerKnowledgeIntegration {
     }
 
     clearLocalChanges() {
-        // در پیاده‌سازی واقعی، اینجا وضعیت همگام‌سازی به‌روز می‌شود
         console.log('🧹 وضعیت همگام‌سازی پاک شد');
     }
 
-    // جستجوی ترکیبی (محلی + سرور)
     async hybridSearch(query) {
         console.log(`🔍 جستجوی ترکیبی برای: "${query}"`);
         
-        // جستجوی محلی
         const localResults = this.localCore.deepKnowledgeSearch(query);
-        
-        // اگر آنلاین هستیم، جستجوی سرور هم انجام می‌شود
         let serverResults = [];
+        
         if (this.isOnline) {
             try {
                 serverResults = await this.searchOnServer(query);
@@ -140,7 +124,6 @@ class ServerKnowledgeIntegration {
     }
 
     async searchOnServer(query) {
-        // شبیه‌سازی جستجوی سرور
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve([
@@ -156,7 +139,6 @@ class ServerKnowledgeIntegration {
         });
     }
 
-    // دریافت آمار سیستم
     getSystemStats() {
         const localStats = this.localCore.getLearningStats();
         

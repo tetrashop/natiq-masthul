@@ -1,6 +1,5 @@
 /**
- * نطق مصطلح - نسخه تقویت شده با هوش مصنوعی و پایگاه دانش
- * قابلیت‌های جدید: یادگیری عمیق، جستجوی پیشرفته، اتصال سرور
+ * نطق مصطلح - نسخه تقویت شده با هوش مصنوعی
  */
 
 const KnowledgeCore = require('./knowledge-server/knowledge-core');
@@ -11,13 +10,8 @@ class NatiqAIEnhanced {
     constructor() {
         console.log('🚀 راه‌اندازی نطق مصطلح - نسخه هوش مصنوعی تقویت شده');
         
-        // راه‌اندازی هسته دانش
         this.knowledgeCore = new KnowledgeCore();
-        
-        // راه‌اندازی موتور جستجوی عصبی
         this.searchEngine = new NeuralSearchEngine(this.knowledgeCore);
-        
-        // راه‌اندازی یکپارچه‌سازی سرور
         this.serverIntegration = new ServerKnowledgeIntegration(this.knowledgeCore);
         
         this.systemReady = false;
@@ -26,11 +20,7 @@ class NatiqAIEnhanced {
 
     async initSystem() {
         console.log('🧠 راه‌اندازی سیستم هوش مصنوعی...');
-        
-        // آموزش اولیه مدل
         await this.searchEngine.trainOnInteractionHistory();
-        
-        // اتصال به سرور (اختیاری)
         const serverConnected = await this.serverIntegration.initializeServerConnection('your-api-key-here');
         
         this.systemReady = true;
@@ -44,16 +34,10 @@ class NatiqAIEnhanced {
 
         console.log(`\n🤔 سوال پردازش پیشرفته: "${question}"`);
         
-        // مرحله ۱: جستجوی عمقی معنایی
         const searchResults = await this.searchEngine.deepSemanticSearch(question);
-        
-        // مرحله ۲: جستجوی ترکیبی (محلی + سرور)
         const hybridResults = await this.serverIntegration.hybridSearch(question);
-        
-        // مرحله ۳: تولید پاسخ بر اساس دانش کشف شده
         const enhancedResponse = this.generateEnhancedResponse(question, searchResults, hybridResults);
         
-        // مرحله ۴: یادگیری از این تعامل
         const learningRecord = this.knowledgeCore.learnFromInteraction(
             question, 
             enhancedResponse, 
@@ -61,7 +45,6 @@ class NatiqAIEnhanced {
             this.extractDomainsFromResults(searchResults)
         );
 
-        // مرحله ۵: به‌روزرسانی مدل عصبی
         this.searchEngine.updateNeuralWeights({
             domainsUsed: learningRecord.domainsUsed,
             confidence: learningRecord.confidence
@@ -80,11 +63,10 @@ class NatiqAIEnhanced {
     }
 
     generateEnhancedResponse(question, semanticResults, hybridResults) {
-        const relevantConcepts = semanticResults.slice(0, 5); // ۵ مفهوم مرتبط اول
+        const relevantConcepts = semanticResults.slice(0, 5);
         
         if (relevantConcepts.length === 0) {
-            return `🔍 سوال شما در حوزه‌های دانش فعلی من یافت نشد. 
-            در حال یادگیری از این سوال جدید هستم...`;
+            return `🔍 سوال شما در حوزه‌های دانش فعلی من یافت نشد. در حال یادگیری از این سوال جدید هستم...`;
         }
 
         let response = `🎯 پاسخ پیشرفته بر اساس ${relevantConcepts.length} مفهوم مرتبط:\n\n`;
@@ -148,7 +130,6 @@ class NatiqAIEnhanced {
         };
     }
 
-    // ابزار مدیریت دانش
     async manualLearn(concept, domain, description) {
         if (!this.knowledgeCore.domains.has(domain)) {
             this.knowledgeCore.addDomain(domain, {
@@ -162,8 +143,6 @@ class NatiqAIEnhanced {
         domainData.concepts.push(concept);
         
         console.log(`✅ مفهوم "${concept}" به حوزه "${domain}" افزوده شد`);
-        
-        // همگام‌سازی با سرور
         await this.serverIntegration.syncWithServer();
         
         return true;
@@ -173,8 +152,6 @@ class NatiqAIEnhanced {
 // تست سیستم
 async function testEnhancedSystem() {
     const system = new NatiqAIEnhanced();
-    
-    // صبر برای راه‌اندازی سیستم
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     const testQuestions = [
@@ -200,13 +177,11 @@ async function testEnhancedSystem() {
         }
     }
 
-    // نمایش آمار نهایی
     const finalStats = system.getSystemStats();
     console.log('\n📈 آمار نهایی سیستم:');
     console.log(JSON.stringify(finalStats, null, 2));
 }
 
-// اجرای تست در صورت فراخوانی مستقیم
 if (require.main === module) {
     testEnhancedSystem().catch(console.error);
 }
