@@ -1,12 +1,31 @@
-# فایل‌های داده محلی
-knowledge-data.json
+# فایل‌های موقت
+*.tmp
+*.log
+*.pid
+
+# پوشه node_modules (اگر وجود دارد)
+node_modules/
+
+# فایل‌های سیستم
+.DS_Store
+Thumbs.db
+
+# فایل‌های محیطی
+.env
+.env.local
+
+# لاگ‌ها
+logs/
 *.log
 
-# پوشه‌های سیستمی
-node_modules/
-.DS_Store
-*.tmp
+# کش
+.cache/
+.nyc_output/
 
-# کلیدهای API
-.env
-config/keys.json
+# فایل‌های IDE
+.vscode/
+.idea/
+
+# فایل‌های اجرایی
+*.exe
+*.bin
