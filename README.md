@@ -17,3 +17,12 @@ git clone https://github.com/YOUR_USERNAME/natiq-masthul.git
 cd natiq-masthul/natiq-ecosystem
 npm install
 node free-api-server.js
+
+## 🔄 یکپارچه‌سازی انجام شد
+
+سیستم نطق مصطلح با موفقیت یکپارچه شد. فایل‌های اصلی:
+
+- `NAtiQ-ENHANCED.js` - هسته اصلی هوش مصنوعی
+- `free-api-server.js` - سرور API رایگان
+- `system-showcase.js` - نمایشگر قابلیت‌ها
+

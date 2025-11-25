@@ -1,8 +1,7 @@
 {
-  "name": "natiq-masthul",
-  "version": "3.2.0",
-  "description": "سیستم هوش مصنوعی نطق مصطلح - نسخه Enterprise Cloudflare",
-  "main": "src/optimized-server.js",
+  "name": "natiq-supreme-system",
+  "version": "1.0.0",
+  "description": "سیستم برتر نطق مصطلح با الگوریتم‌های المپیادی",
   "scripts": {
     "deploy": "npx wrangler deploy",
     "test": "echo \"✅ سیستم Enterprise فعال است\""
@@ -17,5 +16,10 @@
     "artificial-intelligence"
   ],
   "author": "Ramin Ejlal",
-  "license": "MIT"
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.1.0",
+    "stripe-node": "^6.0.0"
+  }
 }
