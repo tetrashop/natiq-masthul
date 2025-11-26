@@ -1,55 +1,25 @@
-const http = require('http');
+// بررسی سلامت سیستم یکپارچه - نسخه CommonJS
+console.log('🔍 بررسی سلامت سیستم...');
 
-console.log('🏥 بررسی سلامت سرویس‌های نطق مصطلح...\n');
-
-const ports = [
-    { port: 3000, name: 'API رایگان' },
-    { port: 3001, name: 'رابط وب' },
-    { port: 3002, name: 'نسخه ساده' }
-];
-
-async function checkPort(portInfo) {
-    return new Promise((resolve) => {
-        const req = http.request({
-            hostname: 'localhost',
-            port: portInfo.port,
-            path: '/',
-            method: 'GET',
-            timeout: 3000
-        }, (res) => {
-            resolve({ ...portInfo, status: '✅ فعال', code: res.statusCode });
-        });
-
-        req.on('error', () => {
-            resolve({ ...portInfo, status: '❌ غیرفعال', code: 'ERROR' });
-        });
-
-        req.on('timeout', () => {
-            resolve({ ...portInfo, status: '⏰ timeout', code: 'TIMEOUT' });
-        });
-
-        req.end();
-    });
+try {
+  const natiqCore = require('./natiq-ecosystem/natiq-core.js');
+  console.log('✅ natiq-core بارگذاری شد');
+  
+  const nlpEngine = require('./natiq-ecosystem/nlp-engine.js');
+  console.log('✅ nlp-engine بارگذاری شد');
+  
+  // تست عملکرد
+  const core = new natiqCore();
+  const nlp = new nlpEngine();
+  
+  const testQuestion = "سلام چطور میتونم برنامه نویسی یاد بگیرم؟";
+  const analysis = core.analyzeQuestion(testQuestion);
+  const nlpAnalysis = nlp.processText(testQuestion);
+  
+  console.log('✅ تست عملکرد موفقیت‌آمیز بود');
+  console.log('📊 تحلیل سوال:', analysis.intent);
+  console.log('🧠 تحلیل NLP:', nlpAnalysis.sentiment);
+  
+} catch (err) {
+  console.error('❌ خطا در بررسی سلامت:', err.message);
 }
-
-async function checkAllPorts() {
-    const results = [];
-    
-    for (const portInfo of ports) {
-        const result = await checkPort(portInfo);
-        results.push(result);
-        console.log(`${result.status} - ${result.name} (پورت ${result.port})`);
-    }
-
-    console.log('\n🎯 وضعیت کلی:');
-    const activeServices = results.filter(r => r.status === '✅ فعال').length;
-    console.log(`سرویس‌های فعال: ${activeServices} از ${ports.length}`);
-    
-    if (activeServices === ports.length) {
-        console.log('🎉 تمام سرویس‌ها سالم هستند!');
-    } else {
-        console.log('🔧 برخی سرویس‌ها نیاز به راه‌اندازی دارند');
-    }
-}
-
-checkAllPorts();
