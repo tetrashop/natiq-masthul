@@ -6,17 +6,5 @@
   "vars": {
     "SYSTEM_NAME": "نطق مصطلح خردمند",
     "WISDOM_LEVEL": "enlightened"
-  },
-  "env": {
-    "development": {
-      "vars": {
-        "ENVIRONMENT": "development"
-      }
-    },
-    "production": {
-      "vars": {
-        "ENVIRONMENT": "production"
-      }
-    }
   }
 }
