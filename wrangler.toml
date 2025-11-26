@@ -1,19 +1,15 @@
 name = "natiq-masthul"
-compatibility_date = "2024-11-26"
-compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2023-10-01"
+account_id = "fa191007362f898481011cfdd0fbcea7"  # جایگزین کنید
 
 [vars]
-NATIQ_VERSION = "4.0.0"
 ENVIRONMENT = "production"
+SYSTEM_NAME = "نطق مصطلح خردمند"
+VERSION = "2.0.0"
 
-[[modules]]
-type = "ESModule"
-path = "cloudflare-worker.js"
+# برای محیط‌های مختلف (اختیاری)
+[env.production]
+name = "natiq-masthul"
 
-[[modules]]
-type = "ESModule"
-path = "natiq-ecosystem/natiq-core.js"
-
-[[modules]]
-type = "ESModule"
-path = "natiq-ecosystem/nlp-engine.js"
+[env.staging]
+name = "natiq-masthul-staging"
