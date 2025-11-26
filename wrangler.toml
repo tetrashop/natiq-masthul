@@ -1,15 +1,14 @@
 name = "natiq-masthul"
-compatibility_date = "2024-01-15"
-compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2023-10-01"
 
 [env.production]
-account_id = "your-account-id"
-zone_id = "your-zone-id"
+account_id = "YOUR_ACCOUNT_ID"
+zone_id = "YOUR_ZONE_ID"
+route = "natiq.yourdomain.com/*"
 
-[[routes]]
-route = "natiq-masthul.your-domain.com/*"
-custom_domain = true
+[site]
+bucket = "./frontend"
+entry-point = "./backend"
 
-[vars]
-NODE_ENV = "production"
-VERSION = "3.2.0"
+build.command = "npm run build"
+build.upload.format = "service-worker"

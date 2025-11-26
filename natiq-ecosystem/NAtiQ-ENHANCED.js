@@ -1,357 +1,296 @@
-const crypto = require('crypto');
+const http = require('http');
+const net = require('net');
+const NatiqCore = require('../natiq-core/core-engine');
+const PersianNLP = require('../nlp-engine/persian-nlp');
+const SmartCache = require('../memory-cache/smart-cache');
+const { ApiRouter, loggingMiddleware, createRateLimitMiddleware } = require('../api-gateway/api-router');
+const config = require('../config/main-config');
 
-class EnhancedNatiqSystem {
+class NatiqEnhanced {
     constructor() {
-        this.performance = 0.947;
-        this.interactionCount = 1;
-        this.learningRate = 0.1;
+        console.log('🧠 راه‌اندازی سیستم نطق مصطلح...');
         
-        // کش‌های پیشرفته
-        this.cache = {
-            analysis: new Map(),
-            validation: new Map(),
-            responses: new Map()
-        };
+        // راه‌اندازی کامپوننت‌ها
+        this.core = new NatiqCore();
+        this.nlp = new PersianNLP();
+        this.cache = new SmartCache(config.cache);
+        this.router = new ApiRouter();
         
-        // پایگاه دانش تخصصی
-        this.knowledgeBase = {
-            personalities: {
-                "رامین اجلال": {
-                    name: "رامین اجلال",
-                    category: "شخصیت",
-                    description: "اطلاعات خاصی در پایگاه دانش موجود نیست. این ممکن است یک شخصیت عمومی، علمی، یا فرهنگی باشد.",
-                    context: "برای اطلاعات دقیق‌تر، لطفاً جزئیات بیشتری ارائه دهید.",
-                    tags: ["شخصیت", "جستجو"]
-                }
-            },
-            concepts: {
-                // مفاهیم پایه
+        // راه‌اندازی میان‌افزارها
+        this.setupMiddlewares();
+        
+        // ثبت مسیرها
+        this.setupRoutes();
+        
+        console.log('✅ سیستم نطق مصطلح با موفقیت راه‌اندازی شد!');
+    }
+
+    setupMiddlewares() {
+        this.router.use(loggingMiddleware);
+        this.router.use(createRateLimitMiddleware(100, 60000));
+    }
+
+    setupRoutes() {
+        // مسیر اصلی سلامتی
+        this.router.get('/health', (req, res) => {
+            this.router.sendJson(res, {
+                status: 'healthy',
+                uptime: process.uptime(),
+                timestamp: new Date().toISOString(),
+                version: '3.0.0'
+            });
+        });
+
+        // مسیر پرسش و پاسخ
+        this.router.post('/ask', async (req, res) => {
+            const body = await this.router.parseBody(req);
+            const { question, context = {} } = body;
+
+            if (!question) {
+                return this.router.sendError(res, 400, 'Question is required');
             }
-        };
-        
-        this.metrics = {
-            totalQuestions: 1,
-            cacheHits: 0,
-            averageConfidence: 0.824,
-            startupTime: new Date()
-        };
-    }
 
-    generateHash(text) {
-        return crypto.createHash('md5').update(text).digest('hex');
-    }
-
-    async analyzeQuestion(question) {
-        const hash = this.generateHash('analysis_' + question);
-        
-        if (this.cache.analysis.has(hash)) {
-            this.metrics.cacheHits++;
-            return this.cache.analysis.get(hash);
-        }
-
-        // تحلیل پیشرفته سوال
-        const words = question.split(' ');
-        const isPersonQuery = words.some(word => 
-            ['کیست', 'چه کسی', 'کیه', 'شناسایی'].includes(word)
-        );
-        
-        const isFactQuery = words.some(word => 
-            ['چیست', ' چیست', 'معنی', 'تعریف'].includes(word)
-        );
-
-        const analysis = {
-            complexity: Math.min(0.9, question.length / 100),
-            clarity: Math.min(0.95, 1 - (question.match(/\?/g) || []).length * 0.1),
-            depth: Math.min(0.85, (words.length / 20)),
-            innovation: 0.7 + Math.random() * 0.2,
-            practicality: 0.6 + Math.random() * 0.3,
-            ethicalAlignment: 0.75 + Math.random() * 0.2,
-            questionType: isPersonQuery ? 'person' : isFactQuery ? 'fact' : 'general',
-            specificity: words.length > 2 ? 0.8 : 0.3
-        };
-
-        this.cache.analysis.set(hash, analysis);
-        return analysis;
-    }
-
-    searchKnowledgeBase(question, analysis) {
-        // جستجو در پایگاه دانش
-        if (analysis.questionType === 'person') {
-            for (const [name, data] of Object.entries(this.knowledgeBase.personalities)) {
-                if (question.includes(name)) {
-                    return {
-                        found: true,
-                        data: data,
-                        confidence: 0.9,
-                        source: 'knowledgeBase'
-                    };
-                }
+            try {
+                const result = await this.ask(question, context);
+                this.router.sendJson(res, result);
+            } catch (error) {
+                this.router.sendError(res, 500, error.message);
             }
-        }
-        
-        return {
-            found: false,
-            confidence: 0.1,
-            source: 'general'
-        };
+        });
+
+        // مسیر آمار سیستم
+        this.router.get('/status', (req, res) => {
+            const status = this.getStatus();
+            this.router.sendJson(res, status);
+        });
+
+        // مسیر پاک‌سازی کش
+        this.router.post('/cache/clear', (req, res) => {
+            const result = this.clearCache();
+            this.router.sendJson(res, result);
+        });
+
+        // مسیر تحلیل NLP
+        this.router.post('/analyze', async (req, res) => {
+            const body = await this.router.parseBody(req);
+            const { text } = body;
+
+            if (!text) {
+                return this.router.sendError(res, 400, 'Text is required for analysis');
+            }
+
+            try {
+                const analysis = this.nlp.processText(text);
+                this.router.sendJson(res, analysis);
+            } catch (error) {
+                this.router.sendError(res, 500, error.message);
+            }
+        });
+
+        // مسیر داشبورد
+        this.router.get('/dashboard', (req, res) => {
+            this.serveDashboard(req, res);
+        });
     }
 
-    async generateSpecializedResponse(question, analysis, knowledgeResult) {
-        if (knowledgeResult.found) {
-            const person = knowledgeResult.data;
-            return {
-                response: `**${person.name}**
-
-📚 **اطلاعات موجود:**
-${person.description}
-
-${person.context}
-
-💡 **پیشنهاد برای اطلاعات دقیق‌تر:**
-• ارائه زمینه بیشتر درباره این شخصیت
-• ذکر حوزه فعالیت (علمی، فرهنگی، هنری، etc.)
-• مشخص کردن دوره زمانی
-
-🔍 **نوع سوال:** پرسش شخصی‌شناسی
-🎯 **سطح جزئیات:** ${analysis.specificity > 0.7 ? 'بالا' : 'پایین'}`,
-                confidence: knowledgeResult.confidence,
-                source: 'knowledgeBase'
-            };
-        }
-
-        // برای سوالات شخصی بدون اطلاعات
-        if (analysis.questionType === 'person') {
-            return {
-                response: `**پرسش درباره یک شخصیت**
-
-🤔 **تحلیل سوال:** شما در مورد "${question}" پرسیده‌اید.
-
-📝 **وضعیت فعلی:**
-• این شخصیت در پایگاه دانش تخصصی من ثبت نشده است
-• ممکن است یک شخصیت تخصصی، محلی یا جدید باشد
-
-💡 **راه‌کارهای پیشنهادی:**
-
-1. **افزایش جزئیات:** 
-   - حوزه فعالیت شخص (علمی، هنری، ورزشی، etc.)
-   - دوره زمانی فعالیت
-   - دستاوردهای شناخته شده
-
-2. **روش‌های جایگزین:**
-   - جستجو در منابع تخصصی
-   - مشورت با متخصصان حوزه مربوطه
-   - بررسی منابع معتبر
-
-🎯 **برای کمک دقیق‌تر:**
-لطفاً زمینه و حوزه فعالیت این شخصیت را مشخص کنید.`,
-                confidence: 0.6,
-                source: 'generalAnalysis'
-            };
-        }
-
-        // پاسخ عمومی برای سایر سوالات
-        return await this.generateGeneralResponse(question, analysis);
-    }
-
-    async generateGeneralResponse(question, analysis) {
-        const reasoningTemplates = [
-            "با تحلیل عمیق مسئله و درنظرگرفتن جوانب مختلف، می‌توان نتیجه گرفت که",
-            "براساس بررسی ابعاد مختلف و استدلال منطقی، راه‌حل بهینه این است که",
-            "با تلفیق دانش موجود و رویکردهای نوآورانه، می‌توان پیشنهاد داد که",
-            "با درنظرگیری تجربیات موفق و اصول پایه، بهترین راهکار این خواهد بود که"
-        ];
-
-        const solutions = [
-            "تمرکز بر توسعه فردی و بهبود مستمر می‌تواند به نتایج مطلوب منجر شود.",
-            "تلفیق خلاقیت و برنامه‌ریزی دقیق راهگشای بسیاری از چالش‌ها خواهد بود.",
-            "همکاری جمعی و اشتراک دانش، امکان دستیابی به راه‌حل‌های جامع را فراهم می‌کند.",
-            "به کارگیری فناوری‌های نوین همراه با حفظ ارزش‌های اساسی می‌تواند اثرگذار باشد."
-        ];
-
-        const template = reasoningTemplates[Math.floor(Math.random() * reasoningTemplates.length)];
-        const solution = solutions[Math.floor(Math.random() * solutions.length)];
-
-        return {
-            response: `${template} ${solution}`,
-            confidence: 0.7 + Math.random() * 0.2,
-            source: 'general'
-        };
-    }
-
-    async validateWithSociety(response, analysis) {
-        const hash = this.generateHash('validation_' + response.response);
-        
-        if (this.cache.validation.has(hash)) {
-            this.metrics.cacheHits++;
-            return this.cache.validation.get(hash);
-        }
-
-        const baseValidation = {
-            consensus: analysis.ethicalAlignment * 0.8 + Math.random() * 0.2,
-            confidence: response.confidence,
-            participants: Math.floor(60 + Math.random() * 40),
-            approvalRate: 0.7 + Math.random() * 0.25,
-            validationMethod: response.source === 'knowledgeBase' ? 'verified' : 'simulated'
-        };
-
-        this.cache.validation.set(hash, baseValidation);
-        return baseValidation;
-    }
-
-    formatResponse(question, specializedResponse, analysis, validation) {
-        const baseResponse = `
-**سوال:** ${question}
-
-**پاسخ:** ${specializedResponse.response}
-
-**مشخصات تحلیل:**
-• نوع سوال: ${analysis.questionType === 'person' ? 'شخصی‌شناسی' : 
-              analysis.questionType === 'fact' ? 'اطلاعاتی' : 'عمومی'}
-• سطح جزئیات: ${(analysis.specificity * 100).toFixed(1)}%
-• وضوح سوال: ${(analysis.clarity * 100).toFixed(1)}%
-
-**نتایج اعتبارسنجی:**
-• سطح اطمینان: ${(validation.confidence * 100).toFixed(1)}%
-• روش اعتبارسنجی: ${validation.validationMethod === 'verified' ? 'تایید شده' : 'شبیه‌سازی شده'}
-• تعداد ارزیابان: ${validation.participants} نفر
-`.trim();
-
-        return baseResponse;
-    }
-
-    async ask(question) {
-        this.interactionCount++;
-        this.metrics.totalQuestions++;
-
-        try {
-            // تحلیل سوال
-            const analysis = await this.analyzeQuestion(question);
+    // تابع پیدا کردن پورت آزاد
+    findAvailablePort(startPort = 3000, maxAttempts = 50) {
+        return new Promise((resolve, reject) => {
+            let attempts = 0;
             
-            // جستجو در پایگاه دانش
-            const knowledgeResult = this.searchKnowledgeBase(question, analysis);
-            
-            // تولید پاسخ تخصصی
-            const specializedResponse = await this.generateSpecializedResponse(question, analysis, knowledgeResult);
-            
-            // اعتبارسنجی
-            const validation = await this.validateWithSociety(specializedResponse, analysis);
-            
-            // فرمت‌بندی پاسخ
-            const response = this.formatResponse(question, specializedResponse, analysis, validation);
-            
-            // به‌روزرسانی متریک‌ها
-            this.metrics.averageConfidence = 
-                (this.metrics.averageConfidence * (this.metrics.totalQuestions - 1) + validation.confidence) / this.metrics.totalQuestions;
-            
-            this.performance = Math.min(0.99, this.performance + this.learningRate * 0.01);
-
-            return {
-                success: true,
-                response: response,
-                metadata: {
-                    confidence: validation.confidence,
-                    consensus: validation.consensus,
-                    analysis: analysis,
-                    validation: validation,
-                    performance: this.performance,
-                    source: specializedResponse.source,
-                    knowledgeFound: knowledgeResult.found
+            function tryPort(port) {
+                if (attempts >= maxAttempts) {
+                    reject(new Error(`نتوانستم پورت آزاد پیدا کنم بعد از ${maxAttempts} تلاش`));
+                    return;
                 }
-            };
 
-        } catch (error) {
-            return {
-                success: false,
-                response: "خطا در پردازش سوال: " + error.message,
-                metadata: {
-                    confidence: 0,
-                    consensus: 0,
-                    performance: this.performance
-                }
-            };
-        }
+                const server = net.createServer();
+                
+                server.listen(port, '127.0.0.1', () => {
+                    server.close(() => {
+                        resolve(port);
+                    });
+                });
+                
+                server.on('error', (err) => {
+                    if (err.code === 'EADDRINUSE') {
+                        attempts++;
+                        console.log(`⏳ پورت ${port} مشغول است، در حال بررسی پورت ${port + 1}...`);
+                        tryPort(port + 1);
+                    } else {
+                        reject(err);
+                    }
+                });
+            }
+            
+            tryPort(startPort);
+        });
     }
 
+    // تابع اصلی پرسش و پاسخ
+    async ask(question, context = {}) {
+        const cacheKey = `ask:${Buffer.from(question).toString('base64')}`;
+        const cached = this.cache.get(cacheKey);
+        
+        if (cached) {
+            return {
+                ...cached,
+                cached: true,
+                cacheHit: true
+            };
+        }
+
+        const analysis = this.core.analyzeQuestion(question);
+        const nlpAnalysis = this.nlp.processText(question);
+        const response = this.core.generateResponse(analysis, {
+            ...context,
+            nlp: nlpAnalysis
+        });
+
+        this.cache.set(cacheKey, {
+            ...response,
+            cached: false,
+            cacheHit: false
+        });
+
+        return response;
+    }
+
+    // دریافت وضعیت سیستم
     getStatus() {
+        const coreStats = this.core.getPerformanceStats();
+        const cacheStats = this.cache.getStats();
+        
         return {
-            performance: this.performance,
-            interactionCount: this.interactionCount,
-            cacheSizes: {
-                analysis: this.cache.analysis.size,
-                validation: this.cache.validation.size,
-                responses: this.cache.responses.size
+            system: {
+                name: 'Natiq Masthul',
+                version: '3.0.0',
+                uptime: coreStats.uptime,
+                status: 'operational'
             },
-            metrics: this.metrics,
-            knowledgeBaseSize: Object.keys(this.knowledgeBase.personalities).length,
-            uptime: Date.now() - this.metrics.startupTime
+            performance: coreStats.successRate / 100,
+            interactionCount: coreStats.interactionCount,
+            cacheSizes: {
+                analysis: cacheStats.currentSize,
+                validation: Math.floor(cacheStats.utilization)
+            },
+            nlp: {
+                maxSequenceLength: config.nlp.maxSequenceLength,
+                currentLoad: coreStats.totalRequests
+            },
+            cache: cacheStats
         };
     }
 
+    // پاک‌سازی کش
     clearCache() {
-        const sizes = {
-            analysis: this.cache.analysis.size,
-            validation: this.cache.validation.size,
-            responses: this.cache.responses.size
-        };
-        
-        this.cache.analysis.clear();
-        this.cache.validation.clear();
-        this.cache.responses.clear();
+        const clearedCount = this.cache.clear();
         
         return {
             success: true,
-            cleared: sizes,
-            message: "کش سیستم با موفقیت پاک شد"
+            message: `کش با موفقیت پاک شد`,
+            clearedEntries: clearedCount,
+            timestamp: new Date().toISOString()
         };
     }
 
-    // افزودن اطلاعات جدید به پایگاه دانش
-    addToKnowledgeBase(category, key, data) {
-        if (!this.knowledgeBase[category]) {
-            this.knowledgeBase[category] = {};
+    // سرویس دهی داشبورد
+    serveDashboard(req, res) {
+        const status = this.getStatus();
+        const html = `
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نطق مصطلح - داشبورد</title>
+    <style>
+        body { 
+            font-family: Tahoma; 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0; 
+            padding: 20px;
+            color: #333;
         }
-        this.knowledgeBase[category][key] = data;
-        return true;
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .status-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-right: 4px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 نطق مصطلح - فعال</h1>
+        <div class="status-card">
+            <h3>وضعیت سیستم: ✅ فعال</h3>
+            <p>پورت: ${this.currentPort || 'در حال راه‌اندازی'}</p>
+            <p>تعاملات: ${status.interactionCount}</p>
+            <p>کارایی: ${(status.performance * 100).toFixed(1)}%</p>
+        </div>
+    </div>
+</body>
+</html>
+        `;
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.end(html);
+    }
+
+    // راه‌اندازی سرور با پیدا کردن پورت آزاد
+    async startServer(desiredPort = 3000) {
+        try {
+            const availablePort = await this.findAvailablePort(desiredPort);
+            this.currentPort = availablePort;
+            
+            const server = http.createServer((req, res) => {
+                this.router.handleRequest(req, res);
+            });
+
+            server.listen(availablePort, config.server.host, () => {
+                console.log(`🚀 سرور نطق مصطلح روی پورت ${availablePort} راه‌اندازی شد!`);
+                console.log(`📍 آدرس: http://${config.server.host}:${availablePort}`);
+                console.log(`📊 داشبورد: http://${config.server.host}:${availablePort}/dashboard`);
+                console.log(`🔧 وضعیت: http://${config.server.host}:${availablePort}/health`);
+                console.log(`🧠 NLP Max Sequence: ${config.nlp.maxSequenceLength}`);
+            });
+
+            return server;
+        } catch (error) {
+            console.error('❌ خطا در راه‌اندازی سرور:', error.message);
+            throw error;
+        }
     }
 }
 
-// ایجاد نمونه اصلی سیستم
-const systemInstance = new EnhancedNatiqSystem();
-
-// توابع صادر شده
-async function ask(question) {
-    return await systemInstance.ask(question);
+// توابع مستقیم برای سازگاری
+function ask(question, context = {}) {
+    const natiq = new NatiqEnhanced();
+    return natiq.ask(question, context);
 }
 
 function getStatus() {
-    return systemInstance.getStatus();
+    const natiq = new NatiqEnhanced();
+    return natiq.getStatus();
 }
 
 function clearCache() {
-    return systemInstance.clearCache();
-}
-
-function getPerformanceMetrics() {
-    const status = systemInstance.getStatus();
-    return {
-        performance: status.performance,
-        totalInteractions: status.interactionCount,
-        cacheEfficiency: (status.metrics.cacheHits / status.metrics.totalQuestions) || 0,
-        averageConfidence: status.metrics.averageConfidence,
-        knowledgeBaseSize: status.knowledgeBaseSize,
-        systemUptime: status.uptime
-    };
-}
-
-function addKnowledge(category, key, data) {
-    return systemInstance.addToKnowledgeBase(category, key, data);
+    const natiq = new NatiqEnhanced();
+    return natiq.clearCache();
 }
 
 module.exports = {
-    EnhancedNatiqSystem,
+    NatiqEnhanced,
     ask,
     getStatus,
-    clearCache,
-    getPerformanceMetrics,
-    addKnowledge
+    clearCache
 };

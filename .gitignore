@@ -1,31 +1,35 @@
-# فایل‌های موقت
-*.tmp
+# لاگ‌ها
+logs/
 *.log
-*.pid
+npm-debug.log*
 
-# پوشه node_modules (اگر وجود دارد)
+# پوشه node_modules (اگر بعداً اضافه شد)
 node_modules/
-
-# فایل‌های سیستم
-.DS_Store
-Thumbs.db
 
 # فایل‌های محیطی
 .env
 .env.local
+.env.production
 
-# لاگ‌ها
-logs/
-*.log
+# فایل‌های سیستمی
+.DS_Store
+Thumbs.db
+
+# فایل‌های امنیتی
+*.key
+*.pem
+*.cert
 
 # کش
 .cache/
-.nyc_output/
+.tmp/
 
-# فایل‌های IDE
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# فایل‌های اجرایی
-*.exe
-*.bin
+# سیستم‌عامل
+*.orig
+*.rej

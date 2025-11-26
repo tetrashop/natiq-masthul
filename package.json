@@ -1,25 +1,34 @@
 {
-  "name": "natiq-supreme-system",
-  "version": "1.0.0",
-  "description": "سیستم برتر نطق مصطلح با الگوریتم‌های المپیادی",
+  "name": "natiq-masthul",
+  "version": "3.0.0",
+  "description": "سیستم هوش مصنوعی فارسی نطق مصطلح - پردازش زبان طبیعی پیشرفته",
+  "main": "natiq-ecosystem/NAtiQ-ENHANCED.js",
   "scripts": {
-    "deploy": "npx wrangler deploy",
-    "test": "echo \"✅ سیستم Enterprise فعال است\""
+    "start": "node start-smart.js",
+    "dev": "node start-smart.js",
+    "deploy": "./scripts/deploy-to-github.sh",
+    "test": "node tests/test-runner.js"
   },
   "keywords": [
-    "ai",
     "nlp",
     "persian",
-    "natiq-masthul",
-    "cloudflare",
-    "enterprise",
+    "farsi",
+    "ai",
+    "language-processing",
+    "natiq",
+    "masthul",
+    "persian-nlp",
     "artificial-intelligence"
   ],
-  "author": "Ramin Ejlal",
+  "author": "Natiq Masthul Team",
   "license": "MIT",
-  "type": "commonjs",
-  "dependencies": {
-    "express": "^5.1.0",
-    "stripe-node": "^6.0.0"
-  }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/natiq-masthul.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
 }
