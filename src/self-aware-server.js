@@ -1,279 +1,118 @@
-import SelfAwareAISystem from './knowledge-boundary.js';
+import KnowledgeBoundary from './knowledge-boundary.js';
+
+class SelfAwareAISystem {
+    constructor() {
+        this.boundary = new KnowledgeBoundary();
+        this.name = "نطق مصطلح خردمند";
+        this.version = "1.0.0";
+    }
+
+    async processQuestion(question) {
+        // اعتبارسنجی سوال
+        const validation = this.boundary.validateQuestion(question);
+        if (!validation.valid) {
+            return {
+                success: false,
+                error: validation.reason,
+                response: "متأسفانه نمی‌توانم به این سوال پاسخ دهم."
+            };
+        }
+
+        // پردازش سوال
+        try {
+            const response = await this.generateWisdomResponse(question);
+            return {
+                success: true,
+                response: response,
+                metadata: {
+                    system: this.name,
+                    version: this.version,
+                    timestamp: new Date().toISOString()
+                }
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: "خطا در پردازش سوال",
+                response: "خطایی در سیستم رخ داده است. لطفاً مجدداً تلاش کنید."
+            };
+        }
+    }
+
+    async generateWisdomResponse(question) {
+        // پاسخ‌های پایه بر اساس سوال
+        const responses = {
+            'تعادل': "برای ایجاد تعادل در زندگی، پیشنهاد می‌کنم زمان خود را به سه بخش کار، خانواده و خودسازی تقسیم کنید.",
+            'بهره‌وری': "برای افزایش بهره‌وری، اولویت‌بندی Aufgaben و حذف عوامل حواس‌پرتی مؤثر است.",
+            'اخلاق': "در تصمیم‌گیری اخلاقی، تأثیر تصمیم بر خود، دیگران و جامعه را در نظر بگیرید.",
+            'default': "بر اساس خرد کهن، جستجوی تعادل و معنویت در زندگی می‌تواند راهگشا باشد."
+        };
+
+        for (const [key, response] of Object.entries(responses)) {
+            if (question.includes(key)) {
+                return response;
+            }
+        }
+
+        return responses.default;
+    }
+
+    getSystemInfo() {
+        return {
+            name: this.name,
+            version: this.version,
+            capabilities: this.boundary.getSystemCapabilities(),
+            boundaries: this.boundary.boundaries
+        };
+    }
+}
+
+// ایجاد نمونه و export
+const aiSystem = new SelfAwareAISystem();
 
 export default {
     async fetch(request, env, ctx) {
-        const url = new URL(request.url);
-        const pathname = url.pathname;
-
-        const corsHeaders = {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-        };
-
-        if (request.method === 'OPTIONS') {
-            return new Response(null, { headers: corsHeaders });
-        }
-
-        // Route سلامت
-        if (pathname === '/health' || pathname === '/api/health') {
-            const healthData = {
-                status: 'success',
-                message: 'سیستم خودآگاه نطق مصطلح فعال است',
-                version: '4.1.0-self-aware',
-                features: [
-                    'تشخیص مرزهای دانش',
-                    'خودآگاهی در پاسخ‌دهی',
-                    'رد هوشمند سوالات نامرتبط',
-                    'تحلیل کیفیت سوالات'
-                ],
-                timestamp: new Date().toISOString()
-            };
-            return Response.json(healthData, { headers: corsHeaders });
-        }
-
-        // Route اصلی با خودآگاهی
-        if (pathname === '/api/ask' || pathname === '/api/aware/ask') {
-            if (request.method === 'POST') {
-                try {
-                    const { question } = await request.json();
-                    
-                    if (!question || question.trim().length < 2) {
-                        return Response.json(
-                            {
-                                status: 'error',
-                                message: 'سوال بسیار کوتاه است',
-                                suggestion: 'لطفاً سوال کامل‌تری مطرح کنید'
-                            },
-                            { status: 400, headers: corsHeaders }
-                        );
-                    }
-
-                    const aiSystem = new SelfAwareAISystem();
-                    const response = await aiSystem.processQuestion(question);
-
-                    return Response.json({
-                        ...response,
-                        timestamp: new Date().toISOString(),
-                        version: '4.1.0-self-aware'
-                    }, { headers: corsHeaders });
-
-                } catch (error) {
-                    return Response.json(
-                        {
-                            status: 'error',
-                            message: 'خطا در پردازش سوال',
-                            error: error.message
-                        },
-                        { status: 500, headers: corsHeaders }
-                    );
-                }
-            }
-        }
-
-        // Route اصلی
-        if (pathname === '/' || pathname === '/aware.html') {
-            const html = this.generateSelfAwareInterface();
-            return new Response(html, {
-                headers: {
-                    'Content-Type': 'text/html; charset=utf-8',
-                    ...corsHeaders
-                }
+        // فقط درخواست‌های POST پردازش شوند
+        if (request.method !== 'POST') {
+            return new Response(JSON.stringify({
+                error: 'فقط درخواست‌های POST پذیرفته می‌شوند'
+            }), { 
+                status: 405,
+                headers: { 'Content-Type': 'application/json; charset=utf-8' }
             });
         }
 
-        return Response.json(
-            { status: 'error', message: 'مسیر یافت نشد' },
-            { status: 404, headers: corsHeaders }
-        );
-    },
-
-    generateSelfAwareInterface() {
-        return `<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نطق مصطلح - نسخه خودآگاه</title>
-    <style>
-        body {
-            font-family: Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .content {
-            padding: 30px;
-        }
-        .question-input {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .question-input input {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-        .question-input button {
-            padding: 15px 25px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .response-area {
-            min-height: 200px;
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-        }
-        .awareness-badge {
-            background: #17a2b8;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🧠 نطق مصطلح - نسخه خودآگاه</h1>
-            <p>سیستمی که مرزهای دانش خود را می‌شناسد</p>
-            <div class="awareness-badge">
-                ✅ سیستم خودآگاه - می‌دانم چه نمی‌دانم
-            </div>
-        </div>
-        
-        <div class="content">
-            <div class="question-input">
-                <input type="text" id="questionInput" 
-                       placeholder="سوال خود را اینجا بپرسید... (من فقط در مورد رامین اجلال و خودم اطلاعات دارم)"
-                       autocomplete="off">
-                <button type="button" id="sendButton">↵ ارسال سوال</button>
-            </div>
+        try {
+            const { question } = await request.json();
             
-            <div id="responseArea" class="response-area">
-                <div style="text-align: center; color: #666; padding: 40px;">
-                    <div style="font-size: 48px; margin-bottom: 10px;">🔍</div>
-                    <div>سیستم خودآگاه آماده پاسخگویی است</div>
-                    <div style="font-size: 12px; margin-top: 10px;">
-                        من صادقانه می‌دانم چه می‌دانم و چه نمی‌دانم
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        class SelfAwareClient {
-            constructor() {
-                this.endpoint = '/api/aware/ask';
-            }
-
-            async askQuestion(question) {
-                const response = await fetch(this.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ question })
+            if (!question) {
+                return new Response(JSON.stringify({
+                    error: 'سوال ارائه نشده است'
+                }), { 
+                    status: 400,
+                    headers: { 'Content-Type': 'application/json; charset=utf-8' }
                 });
-                return await response.json();
             }
+
+            const result = await aiSystem.processQuestion(question);
+            
+            return new Response(JSON.stringify(result), {
+                headers: { 
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type'
+                }
+            });
+
+        } catch (error) {
+            return new Response(JSON.stringify({
+                error: 'خطا در پردازش درخواست',
+                details: error.message
+            }), { 
+                status: 500,
+                headers: { 'Content-Type': 'application/json; charset=utf-8' }
+            });
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const client = new SelfAwareClient();
-            const questionInput = document.getElementById('questionInput');
-            const sendButton = document.getElementById('sendButton');
-            const responseArea = document.getElementById('responseArea');
-
-            sendButton.addEventListener('click', async function() {
-                const question = questionInput.value.trim();
-                if (!question) return;
-
-                sendButton.disabled = true;
-                sendButton.textContent = 'در حال تحلیل...';
-                
-                responseArea.innerHTML = '<div style="text-align: center; padding: 30px;">در حال بررسی سوال و مرزهای دانش...</div>';
-
-                try {
-                    const result = await client.askQuestion(question);
-                    
-                    let html = '';
-                    if (result.status === 'out_of_scope') {
-                        html = \`
-                            <div style="background: #fff3cd; padding: 25px; border-radius: 10px; border-right: 4px solid #ffc107;">
-                                <div style="font-size: 24px; margin-bottom: 15px;">🤔</div>
-                                \${result.answer.replace(/\\n/g, '<br>')}
-                                \${result.suggestion ? \`<div style="margin-top: 15px; padding: 10px; background: #e2e3e5; border-radius: 5px;"><small>\${result.suggestion}</small></div>\` : ''}
-                            </div>
-                        \`;
-                    } else if (result.status === 'error') {
-                        html = \`
-                            <div style="background: #f8d7da; padding: 25px; border-radius: 10px; border-right: 4px solid #dc3545;">
-                                <div style="font-size: 24px; margin-bottom: 15px;">❌</div>
-                                \${result.answer}
-                            </div>
-                        \`;
-                    } else {
-                        html = \`
-                            <div style="background: #d4edda; padding: 25px; border-radius: 10px; border-right: 4px solid #28a745;">
-                                <div style="font-size: 24px; margin-bottom: 15px;">✅</div>
-                                \${result.answer.replace(/\\n/g, '<br>')}
-                            </div>
-                        \`;
-                    }
-                    
-                    responseArea.innerHTML = html;
-                    
-                } catch (error) {
-                    responseArea.innerHTML = \`
-                        <div style="background: #f8d7da; padding: 25px; border-radius: 10px;">
-                            خطا در ارتباط با سرور
-                        </div>
-                    \`;
-                } finally {
-                    sendButton.disabled = false;
-                    sendButton.textContent = '↵ ارسال سوال';
-                    questionInput.value = '';
-                }
-            });
-
-            questionInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendButton.click();
-                }
-            });
-        });
-    </script>
-</body>
-</html>`;
     }
 };

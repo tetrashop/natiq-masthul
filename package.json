@@ -2,13 +2,12 @@
   "name": "natiq-masthul",
   "version": "1.0.0",
   "type": "module",
-  "description": "سیستم خردمند نطق مصطلح",
-  "main": "wisdom-system/master-natiq.js",
   "scripts": {
-    "start": "node wisdom-system/master-natiq.js",
-    "test": "node test-complete-system.js"
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
   },
-  "keywords": ["wisdom", "ai", "persian", "philosophy"],
-  "author": "Natiq Masthul",
-  "license": "MIT"
+  "dependencies": {},
+  "devDependencies": {
+    "wrangler": "^4.50.0"
+  }
 }

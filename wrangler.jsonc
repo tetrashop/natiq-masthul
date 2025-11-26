@@ -1,11 +1,22 @@
 {
   "name": "natiq-masthul",
-  "compatibility_date": "2025-01-15",
+  "compatibility_date": "2024-11-26",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/self-aware-server.js",
   "vars": {
-    "NODE_ENV": "production",
-    "VERSION": "4.1.0-self-aware",
-    "SYSTEM_TYPE": "self-aware-ai"
+    "SYSTEM_NAME": "نطق مصطلح خردمند",
+    "WISDOM_LEVEL": "enlightened"
+  },
+  "env": {
+    "development": {
+      "vars": {
+        "ENVIRONMENT": "development"
+      }
+    },
+    "production": {
+      "vars": {
+        "ENVIRONMENT": "production"
+      }
+    }
   }
 }
