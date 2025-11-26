@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 class NatiqCore {
     constructor() {
@@ -147,4 +147,4 @@ class NatiqCore {
     }
 }
 
-module.exports = NatiqCore;
+export default NatiqCore;

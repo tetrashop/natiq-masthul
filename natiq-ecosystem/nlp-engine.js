@@ -123,4 +123,4 @@ class PersianNLP {
     }
 }
 
-module.exports = PersianNLP;
+export default PersianNLP;
