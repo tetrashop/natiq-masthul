@@ -42,17 +42,10 @@ export class AdvancedResponseGenerator {
     }
 
     async generateResponse(question, userContext = {}) {
-        // تحلیل عمیق سوال
         const analysis = this.analysisEngine.analyzeQuestion(question, userContext);
-        
-        // جستجوی دانش عمیق
         const primaryConcept = analysis.primaryConcept;
         const deepInsights = this.wisdomDB.findDeepInsight(primaryConcept, userContext);
-        
-        // انتخاب سبک پاسخ بر اساس تحلیل
         const responseStyle = this.selectResponseStyle(question, analysis);
-        
-        // تولید پاسخ سفارشی
         const response = this.constructResponse(analysis, deepInsights, responseStyle, userContext);
         
         return {

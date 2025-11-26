@@ -3,713 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نطق مصطلح خردمند - شرکت بوستان</title>
+    <title>نطق مصطلح خردمند پیشرفته - شرکت بوستان</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
             font-family: Vazirmatn, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            direction: rtl;
+            min-height: 100vh; padding: 20px; direction: rtl;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 20px;
-            height: 95vh;
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { 
+            background: rgba(255,255,255,0.95); padding: 25px; 
+            border-radius: 15px; margin-bottom: 20px; text-align: center;
         }
-
-        /* هدر */
-        .header {
-            grid-column: 1 / -1;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .chat-box { 
+            background: white; border-radius: 15px; padding: 20px; 
+            margin-bottom: 20px; height: 500px; overflow-y: auto;
         }
-
-        .logo h1 {
-            color: #2d3748;
-            font-size: 2rem;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .message { margin-bottom: 15px; padding: 15px; border-radius: 10px; }
+        .user { background: #e3f2fd; text-align: left; }
+        .bot { background: #f5f5f5; text-align: right; }
+        .input-area { display: flex; gap: 10px; margin-bottom: 15px; }
+        input { 
+            flex: 1; padding: 12px; border: 2px solid #ddd; 
+            border-radius: 10px; font-size: 16px; font-family: Vazirmatn;
         }
-
-        .logo p {
-            color: #718096;
-            font-size: 1.1rem;
+        button { 
+            padding: 12px 24px; background: #667eea; color: white; 
+            border: none; border-radius: 10px; cursor: pointer; font-size: 16px;
         }
-
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #48bb78;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* محتوای چت */
-        .chat-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            overflow: hidden;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .message {
-            display: flex;
-            gap: 15px;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .user-message {
-            flex-direction: row-reverse;
-        }
-
-        .message-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            flex-shrink: 0;
-        }
-
-        .system-message .message-avatar {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .user-message .message-avatar {
-            background: #e2e8f0;
-            color: #4a5568;
-        }
-
-        .message-content {
-            background: #f7fafc;
-            padding: 18px 22px;
-            border-radius: 18px;
-            max-width: 70%;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e2e8f0;
-        }
-
-        .user-message .message-content {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            margin-left: 0;
-            margin-right: auto;
-        }
-
-        .message-text {
-            line-height: 1.7;
-            font-size: 1.05rem;
-            margin-bottom: 8px;
-        }
-
-        .message-time {
-            font-size: 0.85rem;
-            color: #a0aec0;
-            text-align: left;
-        }
-
-        .user-message .message-time {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* ورودی */
-        .input-container {
-            padding: 25px;
-            border-top: 1px solid #e2e8f0;
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .input-group {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        #questionInput {
-            flex: 1;
-            padding: 18px 22px;
-            border: 2px solid #e2e8f0;
-            border-radius: 15px;
-            font-family: Vazirmatn, sans-serif;
-            font-size: 1.05rem;
-            resize: none;
-            transition: all 0.3s ease;
-            background: white;
-            line-height: 1.5;
-        }
-
-        #questionInput:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .send-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            padding: 0 30px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: Vazirmatn, sans-serif;
-            font-weight: 600;
-            font-size: 1.05rem;
-            transition: all 0.3s ease;
-        }
-
-        .send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .quick-questions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .quick-questions span {
-            color: #718096;
-            font-weight: 500;
-        }
-
-        .quick-btn {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 20px;
-            padding: 10px 18px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            font-family: Vazirmatn, sans-serif;
-        }
-
-        .quick-btn:hover {
-            background: rgba(102, 126, 234, 0.2);
-            transform: translateY(-1px);
-        }
-
-        /* سایدبار */
-        .sidebar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .sidebar-section {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-        }
-
-        .sidebar-section h3 {
-            color: #2d3748;
-            margin-bottom: 18px;
-            font-size: 1.2rem;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-
-        .status-info, .session-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .status-item, .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #f7fafc;
-        }
-
-        .status-item span:first-child, .stat-item span:first-child {
-            color: #718096;
-            font-size: 0.95rem;
-        }
-
-        .status-item span:last-child, .stat-item span:last-child {
-            color: #2d3748;
-            font-weight: 600;
-        }
-
-        .capabilities-list {
-            list-style: none;
-        }
-
-        .capabilities-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid #f7fafc;
-            font-size: 0.95rem;
-            color: #4a5568;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .capabilities-list li:before {
-            content: "✅";
-            font-size: 0.8rem;
-        }
-
-        /* انیمیشن‌ها */
-        .typing-indicator {
-            display: inline-flex;
-            gap: 4px;
-            padding: 12px 18px;
-            background: #f7fafc;
-            border-radius: 18px;
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: #a0aec0;
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
-        }
-
-        .score-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            margin-left: 8px;
-            font-weight: 600;
-        }
-
-        /* ریسپانسیو */
-        @media (max-width: 968px) {
-            .container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr auto;
-            }
-            
-            .sidebar {
-                order: -1;
-            }
-            
-            .message-content {
-                max-width: 85%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .quick-questions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .quick-questions span {
-                text-align: center;
-            }
+        .typing { color: #666; font-style: italic; }
+        .analysis { 
+            background: #fff3cd; padding: 10px; border-radius: 5px; 
+            margin-top: 10px; font-size: 0.9em;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- هدر سیستم -->
-        <header class="header">
-            <div class="logo">
-                <h1>🧠 نطق مصطلح خردمند</h1>
-                <p>سیستم هوش مصنوعی شرکت بوستان - راهنمای تعادل و خرد</p>
+        <div class="header">
+            <h1>🧠 نطق مصطلح خردمند پیشرفته</h1>
+            <p>سیستم هوش مصنوعی با تحلیل مفهومی عمیق - شرکت بوستان</p>
+        </div>
+        
+        <div class="chat-box" id="chatBox">
+            <div class="message bot">
+                <strong>🤖 نطق مصطلح پیشرفته:</strong> درود! من اکنون با قابلیت‌های پیشرفته تحلیل مفهومی آماده‌ام. سوالات عمیق‌تری بپرسید!
             </div>
-            <div class="status">
-                <span class="status-dot"></span>
-                <span id="statusText">سیستم آماده</span>
-            </div>
-        </header>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="questionInput" placeholder="سوال عمیق خود را اینجا بنویسید..." />
+            <button onclick="sendQuestion()">ارسال سوال پیشرفته</button>
+        </div>
 
-        <!-- بخش اصلی چت -->
-        <main class="chat-container">
-            <div class="chat-messages" id="chatMessages">
-                <div class="message system-message">
-                    <div class="message-avatar">🤖</div>
-                    <div class="message-content">
-                        <div class="message-text">
-                            درود! من نطق مصطلح خردمند هستم. 
-                            <br>آماده‌ام تا در زمینه‌های زیر شما را راهنمایی کنم:
-                            <br>• ایجاد تعادل در زندگی و کار
-                            <br>• افزایش بهره‌وری و مدیریت زمان
-                            <br>• تصمیم‌گیری اخلاقی و راهنمایی فلسفی
-                            <br>• توسعه فردی و معنوی
-                        </div>
-                        <div class="message-time" id="currentTime"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ورودی کاربر -->
-            <div class="input-container">
-                <div class="input-group">
-                    <textarea 
-                        id="questionInput" 
-                        placeholder="سوال خود را اینجا بنویسید... (Enter برای ارسال، Shift+Enter برای خط جدید)"
-                        rows="1"
-                    ></textarea>
-                    <button id="sendButton" class="send-btn">
-                        <span>ارسال</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="quick-questions">
-                    <span>سوالات سریع:</span>
-                    <button class="quick-btn" data-question="چگونه در زندگی تعادل ایجاد کنم؟">⚖️ تعادل زندگی</button>
-                    <button class="quick-btn" data-question="راههای افزایش بهره‌وری چیست؟">📈 بهره‌وری</button>
-                    <button class="quick-btn" data-question="برای تصمیم‌گیری اخلاقی چه معیارهایی داشته باشم؟">🔍 تصمیم اخلاقی</button>
-                    <button class="quick-btn" data-question="چطور همزمان موفق و خوشحال باشم؟">🎯 موفقیت شاد</button>
-                </div>
-            </div>
-        </main>
-
-        <!-- پانل اطلاعات سیستم -->
-        <aside class="sidebar">
-            <div class="sidebar-section">
-                <h3>📊 وضعیت سیستم</h3>
-                <div class="status-info">
-                    <div class="status-item">
-                        <span>سطح خرد:</span>
-                        <span id="wisdomLevel">۸۵٪</span>
-                    </div>
-                    <div class="status-item">
-                        <span>کارایی:</span>
-                        <span id="efficiencyLevel">۹۲٪</span>
-                    </div>
-                    <div class="status-item">
-                        <span>زمان پاسخ:</span>
-                        <span id="responseTime">~۲ ثانیه</span>
-                    </div>
-                    <div class="status-item">
-                        <span>ورژن:</span>
-                        <span>۱.۰.۰</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sidebar-section">
-                <h3>🎯 قابلیت‌ها</h3>
-                <ul class="capabilities-list">
-                    <li>مشاوره تعادل زندگی</li>
-                    <li>راهنمایی بهره‌وری</li>
-                    <li>تصمیم‌گیری اخلاقی</li>
-                    <li>تولید حکمت عملی</li>
-                    <li>تحلیل نیازهای نهفته</li>
-                    <li>راهنمایی فلسفی</li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <h3>📈 آمار جلسه</h3>
-                <div class="session-stats">
-                    <div class="stat-item">
-                        <span>سوالات ارسالی:</span>
-                        <span id="questionsCount">۰</span>
-                    </div>
-                    <div class="stat-item">
-                        <span>میانگین امتیاز:</span>
-                        <span id="avgScore">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span>زمان فعالیت:</span>
-                        <span id="uptime">هم اکنون</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
+        <div style="color: white; text-align: center;">
+            <p>✅ سیستم پیشرفته فعال | 🧠 تحلیل مفهومی | 💡 پاسخ‌های شخصی‌سازی شده</p>
+        </div>
     </div>
 
     <script>
-        class NatiqChat {
-            constructor() {
-                this.chatMessages = document.getElementById('chatMessages');
-                this.questionInput = document.getElementById('questionInput');
-                this.sendButton = document.getElementById('sendButton');
-                this.questionsCount = 0;
-                this.totalScore = 0;
-                this.apiUrl = 'https://natiq-masthul.ramin-edjlal1359.workers.dev/';
-                
-                this.init();
-            }
-
-            init() {
-                this.setupEventListeners();
-                this.updateTime();
-                this.setupQuickQuestions();
-                
-                // به‌روزرسانی زمان هر ثانیه
-                setInterval(() => this.updateTime(), 1000);
-                
-                console.log('🧠 نطق مصطلح آماده است!');
-            }
-
-            setupEventListeners() {
-                // ارسال با کلیک
-                this.sendButton.addEventListener('click', () => this.sendQuestion());
-                
-                // ارسال با Enter
-                this.questionInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        this.sendQuestion();
-                    }
+        async function sendQuestion() {
+            const input = document.getElementById('questionInput');
+            const chatBox = document.getElementById('chatBox');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            chatBox.innerHTML += \`
+                <div class="message user">
+                    <strong>👤 شما:</strong> \${question}
+                </div>
+            \`;
+            input.value = '';
+            
+            chatBox.innerHTML += \`
+                <div class="message bot typing" id="typing">
+                    <strong>🤖:</strong> در حال تحلیل پیشرفته سوال...
+                </div>
+            \`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
                 });
                 
-                // اتو ریزایز textarea
-                this.questionInput.addEventListener('input', this.autoResize.bind(this));
+                const data = await response.json();
+                document.getElementById('typing').remove();
                 
-                // فوکوس خودکار روی اینپوت
-                this.questionInput.focus();
-            }
-
-            setupQuickQuestions() {
-                document.querySelectorAll('.quick-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        this.questionInput.value = btn.dataset.question;
-                        this.autoResize();
-                        this.sendQuestion();
-                    });
-                });
-            }
-
-            autoResize() {
-                this.questionInput.style.height = 'auto';
-                this.questionInput.style.height = Math.min(this.questionInput.scrollHeight, 120) + 'px';
-            }
-
-            async sendQuestion() {
-                const question = this.questionInput.value.trim();
-                if (!question) return;
-
-                // غیرفعال کردن دکمه
-                this.sendButton.disabled = true;
-                this.sendButton.innerHTML = '<span>در حال ارسال...</span>';
-                
-                // نمایش سوال کاربر
-                this.addUserMessage(question);
-                this.questionInput.value = '';
-                this.autoResize();
-                
-                // نمایش تایپینگ
-                const typingId = this.showTypingIndicator();
-                
-                try {
-                    const response = await fetch(this.apiUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ question: question })
-                    });
-                    
-                    const data = await response.json();
-                    this.removeTypingIndicator(typingId);
-                    
-                    if (data.success) {
-                        this.addSystemMessage(data.response, data.metadata);
-                        this.updateStats(0.85); // امتیاز فرضی
-                    } else {
-                        this.addSystemMessage('خطا در پردازش سوال: ' + (data.error || 'خطای ناشناخته'));
-                    }
-                } catch (error) {
-                    this.removeTypingIndicator(typingId);
-                    this.addSystemMessage('❌ خطا در ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.');
-                    console.error('Error:', error);
-                }
-                
-                // فعال کردن دکمه
-                this.sendButton.disabled = false;
-                this.sendButton.innerHTML = '<span>ارسال</span><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
-                this.questionInput.focus();
-            }
-
-            addUserMessage(text) {
-                const messageHtml = `
-                    <div class="message user-message">
-                        <div class="message-avatar">👤</div>
-                        <div class="message-content">
-                            <div class="message-text">${this.escapeHtml(text)}</div>
-                            <div class="message-time">${this.getCurrentTime()}</div>
-                        </div>
-                    </div>
-                `;
-                this.chatMessages.insertAdjacentHTML('beforeend', messageHtml);
-                this.scrollToBottom();
-                this.questionsCount++;
-                this.updateQuestionsCount();
-            }
-
-            addSystemMessage(text, metadata = null) {
-                let scoreHtml = '';
-                if (metadata) {
-                    scoreHtml = `<span class="score-badge">امتیاز خرد: ۸۵٪</span>`;
-                }
-                
-                const messageHtml = `
-                    <div class="message system-message">
-                        <div class="message-avatar">🤖</div>
-                        <div class="message-content">
-                            <div class="message-text">${scoreHtml}${this.escapeHtml(text)}</div>
-                            <div class="message-time">${this.getCurrentTime()}</div>
-                        </div>
-                    </div>
-                `;
-                this.chatMessages.insertAdjacentHTML('beforeend', messageHtml);
-                this.scrollToBottom();
-            }
-
-            showTypingIndicator() {
-                const typingId = 'typing-' + Date.now();
-                const typingHtml = `
-                    <div class="message system-message" id="${typingId}">
-                        <div class="message-avatar">🤖</div>
-                        <div class="message-content">
-                            <div class="typing-indicator">
-                                <div class="typing-dot"></div>
-                                <div class="typing-dot"></div>
-                                <div class="typing-dot"></div>
+                if (data.success) {
+                    let analysisHTML = '';
+                    if (data.analysis && data.analysis.primaryConcept) {
+                        analysisHTML = \`
+                            <div class="analysis">
+                                <strong>تحلیل سیستم:</strong> 
+                                موضوع اصلی: \${data.analysis.primaryConcept} | 
+                                عمق: سطح \${data.metadata.depthLevel} |
+                                اطمینان: \${Math.round(data.metadata.confidence * 100)}%
                             </div>
+                        \`;
+                    }
+                    
+                    chatBox.innerHTML += \`
+                        <div class="message bot">
+                            <strong>🤖 نطق مصطلح پیشرفته:</strong> \${data.response}
+                            \${analysisHTML}
                         </div>
-                    </div>
-                `;
-                this.chatMessages.insertAdjacentHTML('beforeend', typingHtml);
-                this.scrollToBottom();
-                return typingId;
-            }
-
-            removeTypingIndicator(id) {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.remove();
+                    \`;
+                } else {
+                    chatBox.innerHTML += \`
+                        <div class="message bot">
+                            <strong>❌ خطا:</strong> \${data.error}
+                        </div>
+                    \`;
                 }
+            } catch (error) {
+                document.getElementById('typing').remove();
+                chatBox.innerHTML += \`
+                    <div class="message bot">
+                        <strong>❌ خطا:</strong> مشکل در ارتباط با سرور
+                    </div>
+                \`;
             }
-
-            scrollToBottom() {
-                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
-            }
-
-            updateStats(score) {
-                this.totalScore += score;
-                const avgScore = this.questionsCount > 0 ? (this.totalScore / this.questionsCount) : 0;
-                document.getElementById('avgScore').textContent = (avgScore * 100).toFixed(1) + '%';
-            }
-
-            updateQuestionsCount() {
-                document.getElementById('questionsCount').textContent = this.questionsCount;
-            }
-
-            updateTime() {
-                document.getElementById('currentTime').textContent = this.getCurrentTime();
-            }
-
-            getCurrentTime() {
-                return new Date().toLocaleTimeString('fa-IR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
-
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
-
-        // راه‌اندازی سیستم زمانی که DOM لود شد
-        document.addEventListener('DOMContentLoaded', () => {
-            new NatiqChat();
+        
+        document.getElementById('questionInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendQuestion();
         });
     </script>
 </body>

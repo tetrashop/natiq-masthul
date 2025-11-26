@@ -11,19 +11,13 @@ class EnhancedMasterNatiq {
         const startTime = Date.now();
         
         try {
-            // دریافت پروفایل کاربر
             const userProfile = this.getUserProfile(userId);
-            
-            // تولید پاسخ پیشرفته
             const enhancedResponse = await this.responseGenerator.generateResponse(
                 question, 
                 { ...context, ...userProfile }
             );
             
-            // به‌روزرسانی تاریخچه
             this.updateConversationHistory(userId, question, enhancedResponse);
-            
-            // به‌روزرسانی پروفایل کاربر
             this.updateUserProfile(userId, question, enhancedResponse);
             
             const processingTime = Date.now() - startTime;
@@ -49,8 +43,6 @@ class EnhancedMasterNatiq {
             
         } catch (error) {
             console.error('❌ خطا در پردازش پیشرفته:', error);
-            
-            // Fallback به سیستم ساده
             return await this.fallbackResponse(question, startTime);
         }
     }
@@ -71,12 +63,10 @@ class EnhancedMasterNatiq {
     updateUserProfile(userId, question, response) {
         const profile = this.getUserProfile(userId);
         
-        // به‌روزرسانی علاقه‌مندی‌ها
         response.analysis.relatedConcepts.forEach(concept => {
             profile.interests.add(concept);
         });
         
-        // تشخیص سبک پاسخ مورد علاقه
         if (response.metadata.confidence > 0.8) {
             profile.preferredResponseStyle = response.metadata.style;
         }
@@ -95,7 +85,6 @@ class EnhancedMasterNatiq {
             metadata: response.metadata
         });
         
-        // حفظ تاریخچه معقول
         if (this.conversationHistory.length > 100) {
             this.conversationHistory = this.conversationHistory.slice(-50);
         }
@@ -130,7 +119,6 @@ class EnhancedMasterNatiq {
     }
 
     async fallbackResponse(question, startTime) {
-        // پاسخ ساده در صورت خطا
         const simpleResponses = {
             'تعادل': "برای ایجاد تعادل، پیشنهاد می‌کنم ابتدا حوزه‌های اصلی زندگی خود را شناسایی کنید و زمان‌بندی متعادلی ایجاد نمایید.",
             'بهره‌وری': "مدیریت انرژی مهم‌تر از مدیریت زمان است. بر کارهای با تاثیر بالا تمرکز کنید.",

@@ -99,7 +99,6 @@ export class ConceptualAnalysisEngine {
             }
         });
 
-        // تحلیل عاطفی سوال
         const emotionalIndicators = {
             'چگونه': 'نیاز به راهنمایی عملی',
             'چرا': 'نیاز به درک علل',

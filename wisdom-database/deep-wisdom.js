@@ -1,7 +1,6 @@
 export class DeepWisdomDatabase {
     constructor() {
         this.knowledgeBase = {
-            // دانش عمیق فلسفی
             philosophical: {
                 'تعادل': {
                     principles: [
@@ -34,7 +33,6 @@ export class DeepWisdomDatabase {
                 }
             },
             
-            // دانش روانشناسی کاربردی
             psychological: {
                 'تصمیم‌گیری': {
                     frameworks: [
@@ -50,7 +48,6 @@ export class DeepWisdomDatabase {
                 }
             },
             
-            // دانش عملی زندگی
             practical: {
                 'مدیریت زمان': {
                     systems: [
@@ -71,7 +68,6 @@ export class DeepWisdomDatabase {
     findDeepInsight(topic, context) {
         const insights = [];
         
-        // جستجوی عمیق در تمام لایه‌های دانش
         for (const [domain, topics] of Object.entries(this.knowledgeBase)) {
             if (topics[topic]) {
                 insights.push({
@@ -89,7 +85,6 @@ export class DeepWisdomDatabase {
     }
 
     generateNovelInsight(topic, context) {
-        // تولید بینش جدید بر اساس اصول اولیه
         const universalPrinciples = [
             "همه پدیده‌ها در تعامل دینامیک هستند - به روابط بین اجزا توجه کنید",
             "رشد واقعی از تعادل بین چالش و حمایت حاصل می‌شود",
