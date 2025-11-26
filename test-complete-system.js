@@ -1,0 +1,47 @@
+import masterNatiq from './wisdom-system/master-natiq.js';
+
+async function comprehensiveTest() {
+  console.log('🧪 تست جامع سیستم نطق مصطلح\\n');
+  
+  const testQuestions = [
+    'چگونه در زندگی تعادل ایجاد کنم؟',
+    'راههای افزایش بهره‌وری در کار چیست؟',
+    'برای تصمیم‌گیری اخلاقی چه معیارهایی داشته باشم؟',
+    'چطور همزمان هم پیشرفت کنم هم آرامش داشته باشم؟'
+  ];
+
+  for (const question of testQuestions) {
+    console.log('🤔 سوال:', question);
+    
+    try {
+      const result = await masterNatiq.ask(question);
+      
+      console.log('✅ موفق!');
+      console.log('📝 پاسخ:', result.finalResponse.content.substring(0, 150) + '...');
+      console.log('📊 امتیاز ترکیبی:', result.finalResponse.scores.combinedScore.toFixed(2));
+      console.log('⏱ زمان:', result.performanceMetrics.processingTime + 'ms');
+      console.log('🔧 ماژول‌ها:', result.performanceMetrics.modulesUsed.join(', '));
+      console.log('---\\n');
+      
+    } catch (error) {
+      console.log('❌ خطا:', error.message);
+      console.log('---\\n');
+    }
+  }
+
+  // تست وضعیت سیستم
+  try {
+    const status = masterNatiq.getStatus();
+    console.log('📊 وضعیت نهایی سیستم:');
+    console.log('   نام:', status.system.name);
+    console.log('   وضعیت:', status.system.status);
+    console.log('   ماژول‌ها:', status.system.modules.join(', '));
+    console.log('   سطح خرد:', status.system.wisdomLevel.toFixed(2));
+    console.log('   کارایی:', (status.performance.efficiency * 100).toFixed(1) + '%');
+  } catch (error) {
+    console.log('❌ خطا در دریافت وضعیت:', error.message);
+  }
+}
+
+// صبر برای راه‌اندازی سیستم
+setTimeout(comprehensiveTest, 2000);

@@ -1,27 +1,14 @@
 {
   "name": "natiq-masthul",
-  "version": "4.0.0",
-  "description": "سیستم هوش مصنوعی فارسی نطق مصطلح - مستقر روی Cloudflare Workers",
+  "version": "1.0.0",
   "type": "module",
-  "main": "cloudflare-worker.js",
+  "description": "سیستم خردمند نطق مصطلح",
+  "main": "wisdom-system/master-natiq.js",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "health": "node health-check.js"
+    "start": "node wisdom-system/master-natiq.js",
+    "test": "node test-complete-system.js"
   },
-  "keywords": [
-    "nlp",
-    "persian",
-    "farsi",
-    "ai",
-    "cloudflare",
-    "worker",
-    "natiq",
-    "masthul"
-  ],
-  "author": "Natiq Masthul Team",
-  "license": "MIT",
-  "devDependencies": {
-    "wrangler": "^3.0.0"
-  }
+  "keywords": ["wisdom", "ai", "persian", "philosophy"],
+  "author": "Natiq Masthul",
+  "license": "MIT"
 }
