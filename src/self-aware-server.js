@@ -1,9 +1,19 @@
-// سیستم پیشرفته نطق مصطلح - نسخه ۲.۰
+import PersonalQAManager from './enhanced-personal-qa.js';
+
+// سیستم پیشرفته نطق مصطلح - نسخه ۲.۱
 class AdvancedNatiq {
     static analyzeQuestion(question) {
+        // اولویت ۱: تحلیل سوالات شخصی
+        const personalAnalysis = PersonalQAManager.analyzePersonalQuestion(question);
+        if (personalAnalysis) return personalAnalysis;
+        
+        // اولویت ۲: تحلیل دانش عمومی
+        const knowledgeAnalysis = PersonalQAManager.analyzeGeneralKnowledge(question);
+        if (knowledgeAnalysis) return knowledgeAnalysis;
+        
+        // اولویت ۳: تحلیل موضوعی معمول
         const questionLower = question.toLowerCase();
         
-        // تحلیل سوال و تشخیص موضوع
         if (questionLower.includes('مقاله') || questionLower.includes('سخنرانی') || questionLower.includes('دست آورد')) {
             return {
                 concept: 'نگارش مقاله و سخنرانی',
@@ -18,10 +28,17 @@ class AdvancedNatiq {
                 depth: 4
             };
         }
+        else if (questionLower.includes('بهره') || questionLower.includes('productive')) {
+            return {
+                concept: 'افزایش بهره‌وری',
+                response: "برای افزایش بهره‌وری:\n\n🎯 **راهکارهای عملی:**\n• قانون ۲۰/۸۰: روی ۲۰٪ کارهای impactful تمرکز کنید\n• تکنیک پومودورو: ۲۵ دقیقه کار، ۵ دقیقه استراحت\n• اولویت‌بندی ماتریس آیزنهاور\n• حذف عوامل حواس‌پرتی دیجیتال\n\n🔄 **عادات موثر:**\n• برنامه‌ریزی روزانه\n• تعیین اهداف SMART\n• بازنگری هفتگی\n• استراحت منظم و کافی",
+                depth: 4
+            };
+        }
         else {
             return {
                 concept: 'خرد عملی',
-                response: "بر اساس خرد کهن، پیشنهاد می‌کنم:\n\n• تعادل را در همه جنبه‌های زندگی جستجو کنید\n• به ندای درون خود اعتماد کنید\n• ارزش‌های اصیل را راهنمای خود قرار دهید\n• در خدمت به دیگران معنای عمیق بیابید\n• همواره در حال یادگیری و رشد باشید",
+                response: "سوال جالبی پرسیدید! 🤔\n\nبرای پاسخ دقیق‌تر، لطفاً سوال خود را با جزئیات بیشتر مطرح کنید یا در یکی از این زمینه‌ها بپرسید:\n\n🎯 **حوزه‌های تخصصی سیستم:**\n• رشد شخصی و خودسازی\n• مهارت‌های حرفه‌ای و کاری\n• مدیریت زمان و بهره‌وری\n• روابط و ارتباطات\n• تصمیم‌گیری و حل مسئله\n• تعادل زندگی و کار\n\n💡 **مثال سوالات بهتر:**\n• \"چگونه مهارت مدیریت زمان خود را بهبود دهم؟\"\n• \"برای مصاحبه شغلی چطور آماده شوم؟\"\n• \"راه‌های کاهش استرس در محیط کار چیست؟\"",
                 depth: 3
             };
         }
@@ -49,7 +66,7 @@ export default {
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نطق مصطلح پیشرفته - نسخه ۲.۰</title>
+    <title>نطق مصطلح پیشرفته - نسخه ۲.۱</title>
     <style>
         body { font-family: system-ui; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; direction: rtl; }
         .container { background: white; padding: 30px; border-radius: 10px; }
@@ -61,17 +78,24 @@ export default {
         .user { background: #e3f2fd; padding: 10px; margin: 5px 0; border-radius: 5px; }
         .bot { background: #f5f5f5; padding: 10px; margin: 5px 0; border-radius: 5px; }
         .analysis { background: #fff3cd; padding: 8px; margin: 5px 0; border-radius: 5px; font-size: 0.9em; }
+        .privacy-note { background: #ffeaa7; padding: 10px; margin: 10px 0; border-radius: 5px; font-size: 0.9em; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧠 نطق مصطلح پیشرفته - نسخه ۲.۰</h1>
+        <h1>🧠 نطق مصطلح پیشرفته - نسخه ۲.۱</h1>
+        <div class="privacy-note">
+            <strong>📢 توجه:</strong> این سیستم از حریم شخصی محافظت می‌کند و اطلاعات شخصی ارائه نمی‌دهد.
+        </div>
         <div class="chat-box" id="chatBox">
-            <div class="bot"><strong>سیستم پیشرفته فعال! 🚀</strong><br>اکنون از تحلیل مفهومی هوشمند استفاده می‌کند.</div>
+            <div class="bot"><strong>سیستم پیشرفته فعال! 🚀</strong><br>اکنون از مدیریت هوشمند سوالات استفاده می‌کند.</div>
         </div>
         <div class="input-area">
-            <input type="text" id="questionInput" placeholder="سوال خود را بپرسید...">
+            <input type="text" id="questionInput" placeholder="سوال خود را در زمینه‌های تخصصی بپرسید...">
             <button onclick="sendQuestion()">ارسال سوال</button>
+        </div>
+        <div style="text-align: center; margin-top: 15px; font-size: 0.9em; color: #666;">
+            💡 پیشنهاد: سوالات در زمینه رشد شخصی، حرفه‌ای، مدیریتی و فلسفی
         </div>
     </div>
     <script>
@@ -81,7 +105,7 @@ export default {
             
             const chatBox = document.getElementById('chatBox');
             chatBox.innerHTML += '<div class="user"><strong>شما:</strong> ' + question + '</div>';
-            chatBox.innerHTML += '<div class="bot">در حال تحلیل پیشرفته...</div>';
+            chatBox.innerHTML += '<div class="bot">در حال تحلیل هوشمند...</div>';
             chatBox.scrollTop = chatBox.scrollHeight;
             
             try {
@@ -95,7 +119,7 @@ export default {
                 chatBox.removeChild(chatBox.lastChild);
                 
                 if (data.success) {
-                    const analysis = data.analysis ? '<div class="analysis">🎯 تحلیل: ' + data.analysis.primaryConcept + ' | 💡 عمق: ' + data.analysis.depthLevel + '/5</div>' : '';
+                    const analysis = data.analysis ? '<div class="analysis">🎯 ' + data.analysis.primaryConcept + ' | 💡 عمق: ' + data.analysis.depthLevel + '/5</div>' : '';
                     chatBox.innerHTML += '<div class="bot"><strong>نطق مصطلح:</strong> ' + data.response.replace(/\\n/g, '<br>') + analysis + '</div>';
                 } else {
                     chatBox.innerHTML += '<div class="bot" style="color: red;">خطا: ' + data.error + '</div>';
@@ -143,12 +167,14 @@ export default {
                     analysis: {
                         primaryConcept: analysis.concept,
                         depthLevel: analysis.depth,
+                        category: analysis.category || 'general',
                         complexity: question.length > 50 ? 'high' : 'medium'
                     },
                     metadata: {
-                        system: "نطق مصطلح پیشرفته",
-                        version: "2.0.0",
-                        timestamp: new Date().toISOString()
+                        system: "نطق مصطلح پیشرفته - نسخه ۲.۱",
+                        version: "2.1.0",
+                        timestamp: new Date().toISOString(),
+                        privacyProtected: true
                     }
                 };
                 
