@@ -1,36 +1,46 @@
-# نطق مصطلح - سیستم هوش مصنوعی فارسی 🧠
+# Natiq Masthul
 
-![نسخه](https://img.shields.io/badge/version-3.0.0-blue)
-![Node.js](https://img.shields.io/badge/Node.js-14+-green)
-![پایتون](https://img.shields.io/badge/Python-3.8+-yellow)
+## 📋 درباره پروژه
+این پروژه بخشی از اکوسیستم **TetraShop** است.
 
-سیستم پیشرفته پردازش زبان طبیعی فارسی با قابلیت‌های کامل NLP و هوش مصنوعی.
+- **نوع:** NODEJS
+- **تعداد فایل‌ها:** 21751
 
-## ✨ ویژگی‌ها
+## 🚀 ویژگی‌ها
+- کد تمیز و بهینه
+- آماده برای توسعه
+- پشتیبانی از آخرین تکنولوژی‌ها
 
-- **🧠 پردازش زبان فارسی پیشرفته**
-- **⚡ سیستم کش هوشمند**
-- **📊 تحلیل احساسات و موجودیت‌ها**
-- **🔍 موتور جستجوی معنایی**
-- **🎯 رابط REST API کامل**
-- **📱 داشبورد مدیریت یکپارچه**
-- **🔄 سیستم پیدا کردن خودکار پورت**
+## 📦 نصب و راه‌اندازی
 
-## 🚀 نصب و راه‌اندازی
+### پیش‌نیازها
+- Node.js 16+
 
+### نصب
 ```bash
-# کلون کردن پروژه
-git clone https://github.com/your-username/natiq-masthul.git
+git clone https://github.com/tetrashop/natiq-masthul.git
 cd natiq-masthul
+npm install
+```
 
-# راه‌اندازی
-node start-smart.js
-natiq-masthul/
-├── natiq-core/           # هسته مرکزی سیستم
-├── nlp-engine/          # موتور پردازش زبان طبیعی
-├── memory-cache/        # سیستم کش هوشمند
-├── api-gateway/         # دروازه API
-├── config/              # تنظیمات
-├── scripts/             # اسکریپت‌های کمکی
-├── tests/               # تست‌ها
-└── natiq-ecosystem/     # فایل اصلی اجرا
+## 🔧 استفاده
+```bash
+npm start
+```
+
+## 🤝 مشارکت
+1. Fork کنید
+2. Branch جدید: `git checkout -b feature/your-feature`
+3. Commit: `git commit -m 'Add feature'`
+4. Push: `git push origin feature/your-feature`
+5. Pull Request باز کنید
+
+## 📝 مجوز
+MIT License
+
+## 🌐 ارتباط با ما
+- **وبسایت:** [tetrashop.ir](https://tetrashop.ir)
+- **گیت‌هاب:** [github.com/tetrashop](https://github.com/tetrashop)
+
+---
+**آخرین به‌روزرسانی:** 2026-08-12
