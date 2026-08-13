@@ -1,25 +1,36 @@
 {
   "name": "natiq-masthul",
-  "version": "1.0.0",
-  "description": "A TetraShop Node.js project",
+  "version": "2.0.0",
+  "description": "Advanced TetraShop project with deep learning optimization",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "jest",
-    "lint": "eslint src/**/*.js"
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write src/**/*.js",
+    "build": "npm run lint && npm test",
+    "docker:build": "docker build -t natiq-masthul .",
+    "docker:run": "docker run -p 3000:3000 natiq-masthul"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "helmet": "^7.0.0",
     "morgan": "^1.10.0",
-    "dotenv": "^16.0.3"
+    "compression": "^1.7.4",
+    "express-rate-limit": "^6.10.0",
+    "http-proxy-middleware": "^2.0.6",
+    "dotenv": "^16.0.3",
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "jest": "^29.5.0",
+    "supertest": "^6.3.3",
     "nodemon": "^2.0.22",
-    "eslint": "^8.40.0"
+    "eslint": "^8.40.0",
+    "prettier": "^2.8.8"
   },
   "author": "TetraShop",
   "license": "MIT"
