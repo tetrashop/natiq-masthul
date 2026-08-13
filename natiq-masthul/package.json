@@ -1,22 +1,26 @@
 {
-  "name": "natiq-masthul-integrated",
-  "version": "2.0.0",
-  "description": "سیستم هوش مصنوعی نطق مصطلح با الگوریتم‌های یکپارچه",
-  "main": "main.js",
+  "name": "natiq-masthul",
+  "version": "1.0.0",
+  "description": "A TetraShop Node.js project",
+  "main": "index.js",
   "scripts": {
-    "start": "node main.js",
-    "test": "node test-system.js",
-    "dev": "node dev-server.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest",
+    "lint": "eslint src/**/*.js"
   },
-  "keywords": [
-    "ai",
-    "reasoning",
-    "knowledge-graph",
-    "persian-nlp"
-  ],
-  "author": "رامین اجلال",
-  "license": "MIT",
-  "engines": {
-    "node": ">=14.0.0"
-  }
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "morgan": "^1.10.0",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.22",
+    "eslint": "^8.40.0"
+  },
+  "author": "TetraShop",
+  "license": "MIT"
 }
