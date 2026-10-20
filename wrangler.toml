@@ -1,15 +1,9 @@
 name = "natiq-masthul"
+main = "cloudflare-worker.js"
 compatibility_date = "2023-10-01"
-account_id = "fa191007362f898481011cfdd0fbcea7"  # جایگزین کنید
+account_id = "fa191007362f898481011cfdd0fbcea7"
 
 [vars]
 ENVIRONMENT = "production"
 SYSTEM_NAME = "نطق مصطلح خردمند"
 VERSION = "2.0.0"
-
-# برای محیط‌های مختلف (اختیاری)
-[env.production]
-name = "natiq-masthul"
-
-[env.staging]
-name = "natiq-masthul-staging"
